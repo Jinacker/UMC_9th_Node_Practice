@@ -34,7 +34,7 @@ export const addUser = async (data: UserData): Promise<number | null> => {
     return result.insertId;
   } catch (err) {
     throw new Error(
-      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err})`
+      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err instanceof Error ? err.message : String(err)})`
     );
   } finally {
     conn.release();
@@ -55,10 +55,9 @@ export const getUser = async (userId: number): Promise<UserFromDB | null> => {
     }
 
     return user[0] as UserFromDB;
-
   } catch (err) {
     throw new Error(
-      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err})`
+      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err instanceof Error ? err.message : String(err)})`
     );
   } finally {
     conn.release();
@@ -70,15 +69,15 @@ export const setPreference = async (userId: number, foodCategoryId: number): Pro
   const conn = await pool.getConnection();
 
   try {
-    await pool.query(
-      `INSERT INTO user_favor_category (food_category_id, user_id) VALUES (?, ?);`,
-      [foodCategoryId, userId]
-    );
+    await pool.query(`INSERT INTO user_favor_category (food_category_id, user_id) VALUES (?, ?);`, [
+      foodCategoryId,
+      userId,
+    ]);
 
     return;
   } catch (err) {
     throw new Error(
-      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err})`
+      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err instanceof Error ? err.message : String(err)})`
     );
   } finally {
     conn.release();
@@ -100,7 +99,7 @@ export const getUserPreferencesByUserId = async (userId: number): Promise<Prefer
     return preferences as PreferenceFromDB[];
   } catch (err) {
     throw new Error(
-      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err})`
+      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${err instanceof Error ? err.message : String(err)})`
     );
   } finally {
     conn.release();

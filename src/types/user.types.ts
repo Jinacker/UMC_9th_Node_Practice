@@ -1,5 +1,16 @@
 // User 관련 타입 정의
 
+export interface UserSignUpRequest {
+  email: string;
+  name: string;
+  gender: string;
+  birth: string; // 요청에서는 문자열로 들어옴
+  address?: string;
+  detailAddress?: string;
+  phoneNumber: string;
+  preferences: number[];
+}
+
 export interface UserData {
   email: string;
   name: string;

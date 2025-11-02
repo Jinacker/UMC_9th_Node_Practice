@@ -10,7 +10,8 @@ import {
 import { UserData, UserResponseDTO } from "../types/user.types.js";
 
 export const userSignUp = async (data: UserData): Promise<UserResponseDTO> => {
-  const joinUserId = await addUser({ // 여기서 addUser는 "repository"의 함수 => 실제 DB에 저장하는 함수에 요청 넘겨주는것.
+  const joinUserId = await addUser({
+    // 여기서 addUser는 "repository"의 함수 => 실제 DB에 저장하는 함수에 요청 넘겨주는것.
     email: data.email,
     name: data.name,
     gender: data.gender,
@@ -25,7 +26,8 @@ export const userSignUp = async (data: UserData): Promise<UserResponseDTO> => {
     throw new Error("이미 존재하는 이메일입니다.");
   }
 
-  for (const preference of data.preferences) { // 한 유저가 여러개의 "음식 취향" 가질수있으니 반복문으로 돌림.
+  for (const preference of data.preferences) {
+    // 한 유저가 여러개의 "음식 취향" 가질수있으니 반복문으로 돌림.
     await setPreference(joinUserId, preference);
   }
   // 여기까지가 데이터 입력
