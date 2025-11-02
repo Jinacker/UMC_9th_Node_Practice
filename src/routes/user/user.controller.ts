@@ -2,9 +2,9 @@
 
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes"; // HTTP 응답 상태 코드 가져다 쓰기 위한것.
-import { bodyToUser } from "../dtos/user.dto.js"; // 요청 => dto 변환용
-import { userSignUp } from "../services/user.service.js"; // 회원가입 service 로직
-import { UserSignUpRequest } from "../types/user.types.js";
+import { bodyToUser } from "./user.dto.js"; // 요청 => dto 변환용
+import { userSignUp } from "./user.service.js"; // 회원가입 service 로직
+import { UserSignUpRequest } from "./user.types.js";
 
 export const handleUserSignUp = async (req: Request, res: Response, _next: NextFunction) => {
   console.log("회원가입을 요청했습니다!");

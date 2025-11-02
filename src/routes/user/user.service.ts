@@ -1,13 +1,8 @@
 // service => 실제 로직 작동
 
-import { responseFromUser } from "../dtos/user.dto.js";
-import {
-  addUser,
-  getUser,
-  getUserPreferencesByUserId,
-  setPreference,
-} from "../repositories/user.repository.js"; // repository에서 가져오는 함수들
-import { UserData, UserResponseDTO } from "../types/user.types.js";
+import { responseFromUser } from "./user.dto.js";
+import { addUser, getUser, getUserPreferencesByUserId, setPreference } from "./user.repository.js"; // repository에서 가져오는 함수들
+import { UserData, UserResponseDTO } from "./user.types.js";
 
 export const userSignUp = async (data: UserData): Promise<UserResponseDTO> => {
   const joinUserId = await addUser({

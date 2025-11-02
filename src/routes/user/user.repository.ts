@@ -1,7 +1,7 @@
 // repository => 실제 DB와 상호작용하는 파트
 
-import { pool } from "../db.config.js";
-import { UserData, UserFromDB, PreferenceFromDB } from "../types/user.types.js";
+import { pool } from "../../config/db.config.js";
+import { UserData, UserFromDB, PreferenceFromDB } from "./user.types.js";
 import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
 
 // User 데이터 삽입

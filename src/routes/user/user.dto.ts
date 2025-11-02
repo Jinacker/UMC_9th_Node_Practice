@@ -6,7 +6,7 @@ import {
   PreferenceFromDB,
   UserResponseDTO,
   UserSignUpRequest,
-} from "../types/user.types.js";
+} from "./user.types.js";
 
 // Request body 변화용 DTO
 
