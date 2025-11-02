@@ -2,7 +2,7 @@ import cors from "cors";
 import dotenv from "dotenv";
 import express from "express";
 import { handleUserSignUp } from "./controllers/user.controller.js";
-import "./db.config.js"; // DB 연결 테스트용 
+import "./db.config.js"; // DB 연결 테스트용
 
 dotenv.config();
 

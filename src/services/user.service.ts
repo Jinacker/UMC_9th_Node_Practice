@@ -7,8 +7,9 @@ import {
   getUserPreferencesByUserId,
   setPreference,
 } from "../repositories/user.repository.js"; // repository에서 가져오는 함수들
+import { UserData, UserResponseDTO } from "../types/user.types.js";
 
-export const userSignUp = async (data) => {
+export const userSignUp = async (data: UserData): Promise<UserResponseDTO> => {
   const joinUserId = await addUser({ // 여기서 addUser는 "repository"의 함수 => 실제 DB에 저장하는 함수에 요청 넘겨주는것.
     email: data.email,
     name: data.name,
@@ -17,6 +18,7 @@ export const userSignUp = async (data) => {
     address: data.address,
     detailAddress: data.detailAddress,
     phoneNumber: data.phoneNumber,
+    preferences: data.preferences,
   });
 
   if (joinUserId === null) {
@@ -28,7 +30,12 @@ export const userSignUp = async (data) => {
   }
   // 여기까지가 데이터 입력
 
-  const user = await getUser(joinUserId); // 데이터 검증용 => 지금 입력한 유저 데이터 확인용으로 받아옴 
+  const user = await getUser(joinUserId); // 데이터 검증용 => 지금 입력한 유저 데이터 확인용으로 받아옴
+
+  if (!user) {
+    throw new Error("사용자를 찾을 수 없습니다.");
+  }
+
   const preferences = await getUserPreferencesByUserId(joinUserId); // 이것도 취향 제대로 들어갔는지 검증용
 
   // 최종 응답 전달  => (service => DTO => controller)

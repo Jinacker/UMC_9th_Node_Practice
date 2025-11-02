@@ -1,10 +1,11 @@
 // controller => 요청 출입구
 
+import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes"; // HTTP 응답 상태 코드 가져다 쓰기 위한것.
 import { bodyToUser } from "../dtos/user.dto.js"; // 요청 => dto 변환용
 import { userSignUp } from "../services/user.service.js"; // 회원가입 service 로직
 
-export const handleUserSignUp = async (req, res, next) => {
+export const handleUserSignUp = async (req: Request, res: Response, next: NextFunction) => {
   console.log("회원가입을 요청했습니다!");
   console.log("body:", req.body); // 값이 잘 들어오나 확인하기 위한 테스트용
 

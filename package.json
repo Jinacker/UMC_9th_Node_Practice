@@ -2,10 +2,10 @@
   "name": "4week",
   "type": "module",
   "version": "1.0.0",
-  "main": "index.js",
+  "main": "dist/index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --exec node src/index.js",
+    "dev": "nodemon --exec tsx src/index.ts",
     "build": "npx tsc",
     "start": "npm run build && node ./dist/index.js"
   },
@@ -22,7 +22,10 @@
     "undefined": "^0.1.0"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
     "@types/express": "^5.0.5",
-    "nodemon": "^3.1.10"
+    "@types/node": "^22.10.5",
+    "nodemon": "^3.1.10",
+    "tsx": "^4.19.2"
   }
 }
