@@ -1,11 +1,11 @@
-// User 도메인 라우터
+// Diner 도메인 라우터
 
 import { Router } from "express";
-//import { handleUserSignUp } from "./user.controller.js";
+import { handleAddDiner } from "./diner.controller.js";
 
 const dinerRouter = Router();
 
-// 회원가입
-//userRouter.post("/signup", handleUserSignUp);
+// 1-1. 특정 지역에 가게 추가하기 API
+dinerRouter.post("/regions/:regionId", handleAddDiner);
 
 export default dinerRouter;
