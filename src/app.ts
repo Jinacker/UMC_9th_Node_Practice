@@ -5,6 +5,7 @@ import userRouter from "./routes/user/user.router.js";
 import reviewRouter from "./routes/review/review.router.js";
 import dinerRouter from "./routes/diner/diner.router.js";
 import missionRouter from "./routes/mission/mission.router.js";
+import userMissionRouter from "./routes/user-mission/user-mission.router.js";
 
 import { errorHandler } from "./middleware/error-handler.js";
 import morgan from "morgan";
@@ -30,6 +31,7 @@ app.use("/api/v1/users", userRouter); // User 도메인 라우트
 app.use("/api/v1/diners", dinerRouter); // diner 도메인 라우트
 app.use("/api/v1/missions", missionRouter); // mission 도메인 라우트
 app.use("/api/v1/reviews", reviewRouter); // review 도메인 라우트
+app.use("/api/v1/user-missions", userMissionRouter); // user-mission 도메인 라우트
 
 // ===== 에러 핸들링 미들웨어 =====
 // 전역 에러 핸들러
