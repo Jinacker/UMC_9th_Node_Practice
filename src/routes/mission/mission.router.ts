@@ -1,11 +1,11 @@
-// User 도메인 라우터
+// Mission 도메인 라우터
 
 import { Router } from "express";
-//import { handleUserSignUp } from "./user.controller.js";
+import { handleAddDinerMission } from "./mission.controller.js";
 
 const missionRouter = Router();
 
-// 회원가입
-//userRouter.post("/signup", handleUserSignUp);
+// 가게에 미션 추가 - POST /api/v1/missions/diners/:dinerId
+missionRouter.post("/diners/:dinerId", handleAddDinerMission);
 
 export default missionRouter;
