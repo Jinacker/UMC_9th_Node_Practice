@@ -1,25 +1,27 @@
-// const express = require('express')  // -> CommonJS
-import express from 'express'          // -> ES Module
+import cors from "cors";
+import dotenv from "dotenv";
+import express from "express";
+import { handleUserSignUp } from "./controllers/user.controller.js";
+import "./db.config.js"; // DB 연결 테스트용 
 
-// 환경 변수 로드
-import dotenv from 'dotenv';
 dotenv.config();
 
-// MySQL import
-import mysql from 'mysql2/promise';
+const app = express();
+const port = process.env.PORT;
+
+app.use(cors()); // cors 방식 허용
+app.use(express.static("public")); // 정적 파일 접근
+app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
+app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
 
 
-const app = express()
-const port = 3000
+// url
+app.get("/", (req, res) => {
+  res.send("Hello World!");
+});
 
-// 환경변수 로드해서 DB 커넥션 풀 연결
-const db = await mysql.createConnection(process.env.DB_URL);
-console.log("MySQL 연결 성공!");
-
-app.get('/', (req, res) => {
-  res.send('Hello Worldz')
-})
+app.post("/api/v1/users/signup", handleUserSignUp); // 회원가입
 
 app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+  console.log(`Example app listening on port ${port}`);
+});
