@@ -1,0 +1,37 @@
+{
+  // Visit https://aka.ms/tsconfig to read more about this file
+  "compilerOptions": {
+    /* ===== 파일 구조 ===== */
+    "rootDir": "./src", // TypeScript 원본 파일이 위치한 디렉토리
+    "outDir": "./dist", // 컴파일된 JS 파일이 저장될 디렉토리
+
+    /* ===== 환경 설정 ===== */
+    "target": "ES2020", // 최신 Node LTS 기준으로 적절
+    "module": "NodeNext", // Node.js ESM import 지원
+    "moduleResolution": "NodeNext", // ESM/require 혼용 가능
+    "lib": ["ESNext"], // 최신 JS 기능 사용 가능
+    "types": ["node"], // Node 내장 모듈 타입
+    "resolveJsonModule": true, // JSON import 가능하게 함
+    "esModuleInterop": true, // CommonJS 모듈 호환성
+    "verbatimModuleSyntax": false, // import type 제약 해제
+
+    /* ===== 출력 관련 ===== */
+    "sourceMap": true, // 디버깅용 소스맵 생성
+    "declaration": true, // .d.ts 타입 선언 파일 생성
+    "declarationMap": true, // 선언 파일에도 소스맵 추가
+
+    /* ===== 타입 검사 옵션 ===== */
+    "strict": true, // 엄격한 타입 체크
+    "noUncheckedIndexedAccess": true, // 배열 인덱스 접근 시 undefined 포함
+    "exactOptionalPropertyTypes": true,
+    "skipLibCheck": true, // 외부 라이브러리 타입 검사 생략
+
+    /* ===== JSX / 기타 ===== */
+    "jsx": "react-jsx", // React JSX 변환
+    "isolatedModules": true, // 개별 파일 단위 모듈 처리
+    "noUncheckedSideEffectImports": true,
+    "moduleDetection": "force" // 자동 모듈 감지 강제
+  },
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
+}
