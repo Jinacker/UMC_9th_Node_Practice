@@ -1,26 +1,38 @@
+// express 자체 설정
 import cors from "cors";
-import dotenv from "dotenv";
-import express from "express";
-import { handleUserSignUp } from "./routes/user/user.controller.js";
-import "./config/db.config.js"; // DB 연결 테스트용
+import express, { Request, Response } from "express";
+import userRouter from "./routes/user/user.router.js";
+import reviewRouter from "./routes/review/review.router.js";
+import dinerRouter from "./routes/diner/diner.router.js";
+import missionRouter from "./routes/mission/mission.router.js";
 
-dotenv.config();
+import { errorHandler } from "./middleware/error-handler.js";
+import morgan from "morgan";
 
 const app = express();
-const port = process.env.PORT;
 
-app.use(cors()); // cors 방식 허용
-app.use(express.static("public")); // 정적 파일 접근
-app.use(express.json()); // request의 본문을 json으로 해석할 수 있도록 함 (JSON 형태의 요청 body를 파싱하기 위함)
-app.use(express.urlencoded({ extended: false })); // 단순 객체 문자열 형태로 본문 데이터 해석
+// ===== 미들웨어 설정 =====
+app.use(cors());
+app.use(express.static("public"));
+app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
+app.use(morgan("dev")); // HTTP 요청 로깅용 => 매우매우 유용하네
 
-// url
-app.get("/", (req, res) => {
-  res.send("Hello World!");
+// ===== 라우터 설정 =====
+
+// 헬스 체크
+app.get("/", (_req: Request, res: Response) => {
+  res.send("Node Server is running!");
 });
 
-app.post("/api/v1/users/signup", handleUserSignUp); // 회원가입
+// 도메인별 라우트
+app.use("/api/v1/users", userRouter); // User 도메인 라우트
+app.use("/api/v1/diners", dinerRouter); // diner 도메인 라우트
+app.use("/api/v1/missions", missionRouter); // mission 도메인 라우트
+app.use("/api/v1/reviews", reviewRouter); // review 도메인 라우트
 
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`);
-});
+// ===== 에러 핸들링 미들웨어 =====
+// 전역 에러 핸들러
+app.use(errorHandler);
+
+export default app;
