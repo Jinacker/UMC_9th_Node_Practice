@@ -1,0 +1,56 @@
+// service => 실제 비즈니스 로직 실행
+import { responseFromDinerMission } from "./mission.dto.js";
+import {
+  addDinerMissionToDB,
+  getDinerMissionById,
+  checkDinerExists,
+  checkMissionExists,
+} from "./mission.repository.js";
+import { AddDinerMissionRequest, DinerMissionResponseDTO } from "./mission.types.js";
+
+export const addDinerMission = async (
+  dinerId: number,
+  data: AddDinerMissionRequest
+): Promise<DinerMissionResponseDTO> => {
+  // 1. 가게 존재 여부 검증
+  const dinerExists = await checkDinerExists(dinerId);
+  if (!dinerExists) {
+    throw new Error(`ID가 ${dinerId}인 가게를 찾을 수 없습니다.`);
+  }
+
+  // 2. 미션 존재 여부 검증
+  const missionExists = await checkMissionExists(data.missionId);
+  if (!missionExists) {
+    throw new Error(`ID가 ${data.missionId}인 미션을 찾을 수 없습니다.`);
+  }
+
+  // 3. Repository에 DB 저장 요청
+  const requestData: {
+    missionId: number;
+    startDate: string;
+    endDate?: string;
+  } = {
+    missionId: data.missionId,
+    startDate: data.startDate,
+  };
+
+  if (data.endDate) {
+    requestData.endDate = data.endDate;
+  }
+
+  const dinerMissionId = await addDinerMissionToDB(dinerId, requestData);
+
+  if (!dinerMissionId) {
+    throw new Error("가게 미션 등록에 실패했습니다.");
+  }
+
+  // 4. 방금 등록한 가게 미션 데이터 조회
+  const dinerMission = await getDinerMissionById(dinerMissionId);
+
+  if (!dinerMission) {
+    throw new Error("등록된 가게 미션 정보를 불러올 수 없습니다.");
+  }
+
+  // 5. 응답용 DTO 변환 후 반환
+  return responseFromDinerMission(dinerMission);
+};
