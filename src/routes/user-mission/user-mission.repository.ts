@@ -61,7 +61,10 @@ export const getMissionClearLogById = async (
   const conn = await pool.getConnection();
 
   try {
-    const [rows] = await conn.query<RowDataPacket[]>(`SELECT * FROM mission_clear_log WHERE id = ?;`, [logId]);
+    const [rows] = await conn.query<RowDataPacket[]>(
+      `SELECT * FROM mission_clear_log WHERE id = ?;`,
+      [logId]
+    );
 
     if (rows.length === 0) return null;
 
