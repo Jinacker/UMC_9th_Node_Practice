@@ -1,5 +1,8 @@
 import mysql from "mysql2/promise";
 import dotenv from "dotenv";
+import { PrismaClient } from "@prisma/client"; // 프리즈마 추가
+
+export const prisma = new PrismaClient(); //프리즈마 인스턴트 추가
 
 dotenv.config();
 

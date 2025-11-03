@@ -32,6 +32,6 @@
     "noUncheckedSideEffectImports": true,
     "moduleDetection": "force" // 자동 모듈 감지 강제
   },
-  "include": ["src/**/*.ts", "src/config/db.config.ts"],
+  "include": ["src/**/*.ts", "src/config/db.config.ts", "prisma.config.ts"],
   "exclude": ["node_modules"]
 }
