@@ -3,7 +3,7 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import { bodyToAddReview } from "./review.dto.js"; // 요청 DTO 변환
-import { addReview } from "./review.service.js"; // Service 로직
+import { addReview,listDinerReviews } from "./review.service.js"; // Service 로직
 import { AddReviewRequest } from "./review.types.js";
 
 // ===== Request 예시 =====
@@ -47,3 +47,19 @@ export const handleAddReview = async (req: Request, res: Response, next: NextFun
 //     "updatedAt": "2025-11-02T12:00:00.000Z"
 //   }
 // }
+
+
+//// 해당 가게의 모든 리뷰를 작성하는 API
+export const handleListDinerReviews = async (req: Request, res: Response, next: NextFunction) => {
+  try{
+  const dinerId = Number(req.params.dinerId);
+  const cursor: number = req.query.cursor ? Number(req.query.cursor) : 0; // 커서값 없으면 0
+
+  const reviews = await listDinerReviews(
+        dinerId, cursor
+  );
+  res.status(StatusCodes.OK).json(reviews);
+} catch(error){
+  next(error);
+}
+};

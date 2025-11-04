@@ -1,5 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { pool } from "../../config/db.config.js";
+import { pool, prisma } from "../../config/db.config.js";
 import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import { ReviewFromDB } from "./review.types.js";
 
@@ -83,4 +83,28 @@ export const getReviewById = async (reviewId: number): Promise<ReviewFromDB | nu
   } finally {
     conn.release();
   }
+};
+
+
+// ==== 해당 가게의 모든 리뷰 Get하는 API ====
+
+export const getAllDinerReviews = async (dinerId:number, cursor:number) => {
+  const reviews = await prisma.review.findMany({
+    select: {
+      id: true,
+      content: true,
+      dinerId: true,
+      userId: true,
+      diner: true,
+      user: true,
+      rating:true,
+      createdAt:true,
+      updatedAt:true,
+    },
+    where: { dinerId: dinerId, id: { gt: cursor } },
+    orderBy: { id: "asc" },
+    take: 5,
+  });
+
+  return reviews;
 };

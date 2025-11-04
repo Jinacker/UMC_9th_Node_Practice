@@ -1,6 +1,6 @@
 // service => 실제 비즈니스 로직 실행
 import { responseFromReview } from "./review.dto.js";
-import { addReviewToDB, getReviewById, checkDinerExists } from "./review.repository.js";
+import { addReviewToDB, getReviewById, checkDinerExists, getAllDinerReviews } from "./review.repository.js";
 import { AddReviewRequest, ReviewResponseDTO } from "./review.types.js";
 
 export const addReview = async (
@@ -33,4 +33,10 @@ export const addReview = async (
 
   // 4. 응답용 DTO 변환 후 반환
   return responseFromReview(review);
+};
+
+/////// 해당 가게의 모든 리뷰 조회 API Service
+export const listDinerReviews = async (dinerId: number, cursor:number) => {
+  const reviews = await getAllDinerReviews(dinerId,cursor);
+return reviews.map(responseFromReview); // 리뷰가 배열로 오니 각각 다 => ResponseFromReview에 매핑해서 결과 반환
 };

@@ -7,15 +7,17 @@ export interface AddReviewRequest {
   content?: string; // 리뷰 내용 (선택)
 }
 
+// 해당 가게의 모든 리뷰 조회 API => Get + urlParams로 매핑해서 Reqeust body랑 DTO 필요없음
+
 // DB에서 가져온 리뷰 데이터 (Repository)
 export interface ReviewFromDB {
   id: number;
-  diner_id: number;
-  user_id: number;
+  dinerId: number;
+  userId: number;
   rating: number;
-  content: string;
-  created_at: Date;
-  updated_at: Date;
+  content: string | null;
+  createdAt: Date;
+  updatedAt: Date;
 }
 
 // 응답 DTO
@@ -24,7 +26,8 @@ export interface ReviewResponseDTO {
   dinerId: number;
   userId: number;
   rating: number;
-  content: string;
+  content: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
+
