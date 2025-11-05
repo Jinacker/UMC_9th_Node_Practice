@@ -26,3 +26,13 @@ export const responseFromReview = (
     updatedAt: review.updatedAt,
   };
 };
+
+// 리뷰 목록 반환용 DTO
+export const responseFromReviews = (reviews: ReviewTypes.ReviewFromDB[]) => { // 리뷰의 배열로 타입 선언
+  return {
+    data: reviews,
+    pagination: {
+      cursor: reviews.at(-1)?.id ?? null,
+    },
+  };
+};
