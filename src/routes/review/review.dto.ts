@@ -18,11 +18,11 @@ export const responseFromReview = (
 ): ReviewTypes.ReviewResponseDTO => {
   return {
     id: review.id,
-    dinerId: review.diner_id,
-    userId: review.user_id,
+    dinerId: review.dinerId,
+    userId: review.userId,
     rating: review.rating,
     content: review.content,
-    createdAt: review.created_at,
-    updatedAt: review.updated_at,
+    createdAt: review.createdAt,
+    updatedAt: review.updatedAt,
   };
 };

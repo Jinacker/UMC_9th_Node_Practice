@@ -1,6 +1,6 @@
 // service => 실제 비즈니스 로직 실행
 import { responseFromReview } from "./review.dto.js";
-import { addReviewToDB, getReviewById, checkDinerExists } from "./review.repository.js";
+import { addReviewToDB, getReviewById, checkDinerExists, getAllMyReviews } from "./review.repository.js";
 import { AddReviewRequest, ReviewResponseDTO } from "./review.types.js";
 
 export const addReview = async (
@@ -33,4 +33,18 @@ export const addReview = async (
 
   // 4. 응답용 DTO 변환 후 반환
   return responseFromReview(review);
+};
+
+
+// ===== 6주차 과제 1번 =====
+// 내가 작성한 리뷰들 GET 하는 Service
+export const listUserReviews = async(userId:number, cursor: number) => {
+  const myReviews = await getAllMyReviews(userId,cursor);
+
+  if (!myReviews) {
+    throw new Error("내 리뷰 작성 목록 불러오기를 실패했습니다."); // controller로 에러를 throw해줌.
+  }
+
+  return myReviews.map(responseFromReview); // Repository에서 받아온 리뷰 배열 => DTO에 map으로 각각 파싱
+
 };
