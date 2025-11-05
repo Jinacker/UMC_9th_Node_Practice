@@ -1,5 +1,6 @@
 // dto => 입력 데이터 정형화 및 응답 변환
 import * as MissionTypes from "./mission.types.js";
+import type { DinerMissionListResponseDTO } from "./mission.types.js";
 
 // 요청용 DTO 변환
 export const bodyToAddDinerMission = (
@@ -29,3 +30,32 @@ export const responseFromDinerMission = (
     endDate: dinerMission.end_date,
   };
 };
+
+
+
+
+// ====== 6주차 미션 2 ======
+// ====== 가게 미션 목록 FROM DB → Response DTO ======> flat 하게 펴줌
+export const responseFromDinerMissionList = (
+  dinerMissionList: MissionTypes.DinerMissionListFromDB
+): DinerMissionListResponseDTO => {
+
+  return ({
+    dinerMissionId: dinerMissionList.id,
+    dinerId: dinerMissionList.dinerId,
+
+    region: dinerMissionList.diner.region.name,
+    category: dinerMissionList.diner.category.name,
+    name: dinerMissionList.diner.name,
+    rating: dinerMissionList.diner.rating ?? 0, // null 일시 기본값 설정
+
+    missionId: dinerMissionList.mission.id,
+    title: dinerMissionList.mission.title,
+    description: dinerMissionList.mission.description ?? "", // null 일시 기본값 설정
+    pointReward: dinerMissionList.mission.pointReward,
+
+    startDate: dinerMissionList.startDate,
+    endDate: dinerMissionList.endDate,
+  });
+};
+

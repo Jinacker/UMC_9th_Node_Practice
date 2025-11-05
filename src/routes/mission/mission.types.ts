@@ -24,3 +24,54 @@ export interface DinerMissionResponseDTO {
   startDate: Date;
   endDate: Date | null;
 }
+
+// 6주차 과제 2번 
+
+///// DB 에서 가져온 가게 미션 목록 데이터 => nested 구조 그대로 가져옴
+export interface DinerMissionListFromDB {
+  id: number; // DinerMission ID
+  dinerId: number;
+  missionId: number;
+  startDate: Date;
+  endDate: Date | null;
+
+  diner: {
+    name: string;
+    rating: number | null;
+    region: {
+      id: number;
+      name: string;
+    };
+    category: {
+      id: number;
+      name: string;
+    };
+  };
+
+  mission: {
+    id: number;
+    title: string;
+    description: string | null;
+    pointReward: number;
+  };
+}
+
+
+///// 가게 미션 목록 Response용 DTO => API용
+export interface DinerMissionListResponseDTO {
+  dinerMissionId: number;
+  dinerId: number;
+
+  region: string;
+  category: string;
+  name: string;
+  rating: number;
+
+  missionId: number;
+  title: string;
+  description: string;
+  pointReward: number;
+
+  startDate: Date;
+  endDate: Date | null;
+}
