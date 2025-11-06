@@ -3,7 +3,7 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import { bodyToChallengeMission } from "./user-mission.dto.js";
-import { challengeMission } from "./user-mission.service.js";
+import { challengeMission, myMissionListService } from "./user-mission.service.js";
 import { ChallengeMissionRequest } from "./user-mission.types.js";
 
 // ===== Request 예시 =====
@@ -43,3 +43,28 @@ export const handleChallengeMission = async (req: Request, res: Response, next: 
 //     "startedAt": "2025-11-03T00:00:00.000Z"
 //   }
 // }
+
+/// ======= 6주차 미션 3 ========
+// 내가 진행중인 미션 목록 => controller
+
+export const handleMyMissionList = async (req:Request, res:Response, next: NextFunction) => {
+  try {
+
+    console.log(req.params.userId, "내가 진행중인 미션 목록을 조회합니다."); // 요청 체크
+
+    const userId:number = Number(req.params.userId);
+    const cursor: number = req.query.cursor ? Number(req.query.cursor) : 0; // 커서값이 없으면 0으로 처리 => 커서값 Number로 처리
+
+    const MyMissionList = await myMissionListService(userId,cursor);// 질문: 여기선 dto랑 서비스에서 타입을 검증해서 굳이 타입 검증 안해도 될까요..?
+
+    res.status(StatusCodes.OK).json(
+      {
+        sucess: true,
+        message: "내가 진행중인 미션 목록을 찾아왔어요!",
+        result: MyMissionList
+      }
+    )
+  } catch (error) {
+    next(error);
+  }
+};

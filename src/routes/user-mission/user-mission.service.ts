@@ -1,10 +1,11 @@
 // service => 실제 비즈니스 로직 실행
 
-import { responseFromMissionClearLog } from "./user-mission.dto.js";
+import { responseFromMissionClearLog,responseFromMyMissionList } from "./user-mission.dto.js";
 import {
   checkOngoingMission,
   addMissionClearLog,
   getMissionClearLogById,
+  getMyMissionListRepo
 } from "./user-mission.repository.js";
 import { ChallengeMissionRequest, ChallengeMissionResponseDTO } from "./user-mission.types.js";
 
@@ -35,4 +36,17 @@ export const challengeMission = async (
 
   // 4. 응답용 DTO 변환 후 반환
   return responseFromMissionClearLog(missionLog);
+};
+
+
+/// ====== 6주차 미션 3 =======
+// 내가 진행중인 미션 목록 조회 => service
+
+export const myMissionListService = async (userId:number, cursor:number) => { // 리턴타입은 맨 마지막에 추가하는게 좋을까요..?
+  
+  // 내 진행중인 미션 목록 조회
+  const MyMissionList = await getMyMissionListRepo(userId, cursor);
+
+  return MyMissionList.map(responseFromMyMissionList); // 배열로 받아오니 dto에 map으로 매핑해줌
+
 };

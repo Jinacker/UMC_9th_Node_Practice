@@ -16,9 +16,45 @@ export const responseFromMissionClearLog = (
 ): UserMissionTypes.ChallengeMissionResponseDTO => {
   return {
     id: log.id,
-    userId: log.user_id,
-    dinerMissionId: log.diner_mission_id,
+    userId: log.userId,
+    dinerMissionId: log.dinerMissionId,
     status: log.status,
-    startedAt: log.started_at,
+    startedAt: log.startedAt,
   };
 };
+
+
+
+// ======= 6주차 미션 3 =======
+//// === 내 현재 진행중 미션 목록 DTO ===
+// DB => 응답용 DTO 변환
+export const responseFromMyMissionList = (
+  log: UserMissionTypes.MissionClearLogFromDB): UserMissionTypes.myMissionResponseDTO => {
+  return {
+    id: log.id,
+    userId: log.userId,
+    dinerMissionId: log.dinerMissionId,
+    status: log.status,
+    startedAt: log.startedAt,
+
+    // diner
+    regionId: log.dinerMission.diner.regionId,
+    name: log.dinerMission.diner.name,
+    foodCategoryId: log.dinerMission.diner.categoryId,
+    address: log.dinerMission.diner.address,
+    phoneNumber: log.dinerMission.diner.phoneNumber,
+    rating: log.dinerMission.diner.rating,
+
+    // mission + dinerMission extra
+    dinerId: log.dinerMission.dinerId ?? log.dinerMission.diner.id,
+    region: log.dinerMission.diner.region.name, 
+    category: log.dinerMission.diner.category.name, 
+
+    missionId: log.dinerMission.mission.id,
+    title: log.dinerMission.mission.title,
+    description: log.dinerMission.mission.description,
+    pointReward: log.dinerMission.mission.pointReward,
+  };
+};
+
+
