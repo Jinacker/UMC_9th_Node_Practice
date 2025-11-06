@@ -20,9 +20,11 @@ export interface ChallengeMissionRequest {
 export interface ChallengeMissionResponseDTO {
   id: number;
   userId: number;
+  pointHistoryId ?: number | null | undefined;
   dinerMissionId: number;
   status: string;
   startedAt: Date;
+  completedAt ?: Date | null | undefined; // 이럼 안되는데.. 너무 느슨해지는거 아닌지..
 }
 
 
@@ -55,9 +57,11 @@ export interface myMissionResponseDTO {
 export interface MissionClearLogFromDB {
   id: number;
   userId: number;
+  pointHistoryId ?: number | null;
   dinerMissionId: number;
   status: string;
   startedAt: Date;
+  completedAt ?: Date | null;
 
   dinerMission: {
     startDate: Date;
@@ -82,4 +86,14 @@ export interface MissionClearLogFromDB {
       pointReward: number;
     };
   };
+}
+
+export interface ClearedLogFromDB {
+  id: number;
+  userId: number;
+  pointHistoryId ?: number | null;
+  dinerMissionId: number;
+  status: string;
+  startedAt: Date;
+  completedAt ?: Date | null;
 }

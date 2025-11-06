@@ -1,11 +1,14 @@
 // service => 실제 비즈니스 로직 실행
 
-import { responseFromMissionClearLog,responseFromMyMissionList } from "./user-mission.dto.js";
+import { responseFromMissionClearLog,responseFromMyMissionList, responseForClearLog } from "./user-mission.dto.js";
 import {
   checkOngoingMission,
   addMissionClearLog,
   getMissionClearLogById,
-  getMyMissionListRepo
+  getMyMissionListRepo,
+  checkMissionProgress,
+  patchCompleteMission,
+  checkUser
 } from "./user-mission.repository.js";
 import { ChallengeMissionRequest, ChallengeMissionResponseDTO } from "./user-mission.types.js";
 
@@ -49,4 +52,28 @@ export const myMissionListService = async (userId:number, cursor:number) => { //
 
   return MyMissionList.map(responseFromMyMissionList); // 배열로 받아오니 dto에 map으로 매핑해줌
 
+};
+
+
+/// ===== 6주차 미션 4 ======
+// 내가 진행 중인 미션을 진행 완료로 바꾸기 PATCH API
+
+export const completeMissionService = async (userId:number, missionLogId: number) => {
+
+  // 1. 일단 해당 유저의 미션이 맞는지 체크
+  const checkUsers = await checkUser(userId,missionLogId);
+  if (!checkUsers) {
+    throw new Error("해당 유저의 미션이 아닙니다.")
+  }
+
+  // 2. 미션이 진행중인지 체크
+  const checkMission= await checkMissionProgress(missionLogId);
+  if (!checkMission) {
+    throw new Error("도전하지 않은 미션입니다.")
+  }
+
+  // 3. 해당 미션을 완료
+  const completedMission = await patchCompleteMission(userId, missionLogId);
+
+  return responseForClearLog(completedMission);
 };
