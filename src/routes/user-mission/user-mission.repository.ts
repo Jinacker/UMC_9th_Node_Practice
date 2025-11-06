@@ -1,6 +1,6 @@
 // repository => 실제 DB와 상호작용하는 파트
 
-import { pool } from "../../config/db.config.js";
+import { pool,prisma } from "../../config/db.config.js";
 import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import { MissionClearLogFromDB } from "./user-mission.types.js";
 
@@ -78,4 +78,62 @@ export const getMissionClearLogById = async (
   } finally {
     conn.release();
   }
+};
+
+// ===== 6주차 미션 3 ======
+// 내 진행중인 미션 목록 Repository
+
+export const getMyMissionListRepo = async (userId:number, cursor:number): Promise<MissionClearLogFromDB[]> => { // DB 에러 헨들링용 Next도 받음
+try{
+  const myMissionList = await prisma.missionClearLog.findMany({
+    where: {userId: userId, status: "진행중" ,id: {gt: cursor}}, // 진행중인 미션만 가져오게함
+    orderBy: {id: "asc"},
+    take: 5,
+    
+      select: {
+        id: true,
+        userId: true,
+        dinerMissionId: true,
+        status: true,
+        startedAt: true,
+
+        dinerMission: {
+          select: {
+            startDate: true,
+            dinerId: true,
+
+            diner: {
+              select: {
+                id: true,
+                regionId: true,
+                name: true,
+                categoryId: true,
+                address: true,
+                phoneNumber: true,
+                rating: true,
+                region: {select: {name:true}},
+                category: {select: {name:true}},
+                
+              },
+            },
+
+            mission: {
+              select: {
+                id: true,
+                title: true,
+                description: true,
+                pointReward: true,
+              },
+            },
+          },
+        },
+      },
+    });
+
+
+  return myMissionList;
+
+} catch(error) { // DB단 에러 헨들링
+  throw(error);
+}
 };
