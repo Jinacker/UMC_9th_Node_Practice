@@ -26,7 +26,7 @@ export const addReviewToDB = async (dinerId:number, data: any) => {
         dinerId: dinerId,
         userId: data.userId,
         rating: data.rating,
-        content: data.content,
+        content: data.content
       }
     });
     return addedReview;
