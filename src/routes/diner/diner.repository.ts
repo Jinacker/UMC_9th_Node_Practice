@@ -1,5 +1,4 @@
-import { pool,prisma } from "../../config/db.config.js";
-import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
+import { prisma } from "../../config/db.config.js";
 import { AddDinerRequest, DinerFromDB } from "./diner.types.js";
 
 // 식당 등록 => 리팩토리 

@@ -1,6 +1,5 @@
 /* eslint-disable prettier/prettier */
-import { pool, prisma } from "../../config/db.config.js";
-import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
+import { prisma } from "../../config/db.config.js";
 import { DinerMissionFromDB, DinerMissionListFromDB } from "./mission.types.js";
 
 // 가게 존재 여부 확인 => 리팩토링

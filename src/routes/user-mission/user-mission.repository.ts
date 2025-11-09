@@ -1,5 +1,4 @@
-import { pool,prisma } from "../../config/db.config.js";
-import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
+import { prisma } from "../../config/db.config.js";
 import { MissionClearLogFromDB } from "./user-mission.types.js";
 
 // 이미 도전 중인 미션인지 확인 => ORM으로 리팩토링
