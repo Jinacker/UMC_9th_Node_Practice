@@ -13,7 +13,7 @@ export const bodyToAddDiner = (body: DinerTypes.AddDinerRequest): DinerTypes.Add
 };
 
 // 응답용 DTO 변환
-export const responseFromDiner = (diner: DinerTypes.DinerFromDB): DinerTypes.DinerResponseDTO => {
+export const responseFromDiner = (diner: any) => {
   return {
     id: diner.id,
     regionId: diner.region_id,

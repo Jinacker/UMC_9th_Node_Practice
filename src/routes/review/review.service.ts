@@ -14,18 +14,18 @@ export const addReview = async (
   }
 
   // 2. Repository에 DB 저장 요청
-  const reviewId = await addReviewToDB(dinerId, {
+  const addedReview = await addReviewToDB(dinerId, {
     userId: data.userId,
     rating: data.rating,
     content: data.content ?? "", // default 값 설정
   });
 
-  if (!reviewId) {
+  if (!addedReview) {
     throw new Error("리뷰 등록에 실패했습니다.");
   }
 
   // 3. 방금 등록한 리뷰 데이터 조회
-  const review = await getReviewById(reviewId);
+  const review = await getReviewById(addedReview.id);
 
   if (!review) {
     throw new Error("등록된 리뷰 정보를 불러올 수 없습니다.");
