@@ -14,8 +14,7 @@ import { ChallengeMissionRequest, ChallengeMissionResponseDTO } from "./user-mis
 
 export const challengeMission = async (
   dinerMissionId: number,
-  data: ChallengeMissionRequest
-): Promise<ChallengeMissionResponseDTO> => {
+  data: ChallengeMissionRequest ) => {
   // 1. 이미 도전 중인 미션인지 확인
   const isOngoing = await checkOngoingMission(data.userId, dinerMissionId);
 

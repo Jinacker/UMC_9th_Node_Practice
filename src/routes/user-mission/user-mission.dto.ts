@@ -4,7 +4,7 @@ import * as UserMissionTypes from "./user-mission.types.js";
 // 요청용 DTO 변환
 export const bodyToChallengeMission = (
   body: UserMissionTypes.ChallengeMissionRequest
-): UserMissionTypes.ChallengeMissionRequest => {
+) => {
   return {
     userId: Number(body.userId), // 필수
   };
@@ -12,8 +12,8 @@ export const bodyToChallengeMission = (
 
 // 응답용 DTO 변환
 export const responseFromMissionClearLog = (
-  log: UserMissionTypes.MissionClearLogFromDB
-): UserMissionTypes.ChallengeMissionResponseDTO => {
+  log: any
+) => {
   return {
     id: log.id,
     userId: log.userId,

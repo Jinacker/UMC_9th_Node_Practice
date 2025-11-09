@@ -1,82 +1,56 @@
-// repository => 실제 DB와 상호작용하는 파트
-
 import { pool,prisma } from "../../config/db.config.js";
 import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
 import { MissionClearLogFromDB } from "./user-mission.types.js";
 
-// 이미 도전 중인 미션인지 확인
-export const checkOngoingMission = async (
-  userId: number,
-  dinerMissionId: number
-): Promise<boolean> => {
-  const conn = await pool.getConnection();
+// 이미 도전 중인 미션인지 확인 => ORM으로 리팩토링
 
+export const checkOngoingMission = async (userId:number, dinerMissionId: number) => { 
+  try{ 
+      const isInProgress = await prisma.missionClearLog.findFirst({
+        where: {userId: userId, dinerMissionId: dinerMissionId, status: { in: ["진행중", "성공"]}},
+      });
+
+    return isInProgress !== null; // 없으면 null 있으면 해당 객체 반환
+;
+  } catch (error) {
+      throw(error);;
+    }
+};
+
+
+// 미션 도전 로그 추가 (진행중 상태로)
+export const addMissionClearLog = async (userId: number, dinerMissionId: number) => {
   try {
-    const [rows] = await conn.query<RowDataPacket[]>(
-      `SELECT id FROM mission_clear_log WHERE user_id = ? AND diner_mission_id = ? AND status = '진행중';`,
-      [userId, dinerMissionId]
-    );
+    const addedMissionClearLog = await prisma.missionClearLog.create({
+      data: {
+        userId,
+        dinerMissionId,
+        status: '진행중',
+        startedAt: new Date(), // 또는 Prisma에서 auto-set 되면 생략
+      },
+      select: {
+        id: true, // 필요한 필드 선택 (예: id만 리턴)
+      },
+    });
 
-    return rows.length > 0;
-  } catch (err) {
-    throw new Error(
-      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${
-        err instanceof Error ? err.message : String(err)
-      })`
-    );
-  } finally {
-    conn.release();
+    return addedMissionClearLog.id;
+  } catch (error) {
+    throw error;
   }
 };
 
-// 미션 도전 로그 추가
-export const addMissionClearLog = async (
-  userId: number,
-  dinerMissionId: number
-): Promise<number> => {
-  const conn = await pool.getConnection();
-
-  try {
-    const [result] = await conn.query<ResultSetHeader>(
-      `INSERT INTO mission_clear_log (user_id, diner_mission_id, status, started_at) VALUES (?, ?, '진행중', NOW());`,
-      [userId, dinerMissionId]
-    );
-
-    return result.insertId;
-  } catch (err) {
-    throw new Error(
-      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${
-        err instanceof Error ? err.message : String(err)
-      })`
-    );
-  } finally {
-    conn.release();
-  }
-};
 
 // 미션 도전 로그 단건 조회
-export const getMissionClearLogById = async (
-  logId: number
-): Promise<MissionClearLogFromDB | null> => {
-  const conn = await pool.getConnection();
-
+export const getMissionClearLogById = async (logId:number) => {
   try {
-    const [rows] = await conn.query<RowDataPacket[]>(
-      `SELECT * FROM mission_clear_log WHERE id = ?;`,
-      [logId]
-    );
+    const missionClearLog = await prisma.missionClearLog.findUnique({
+      where: {id:logId}
+    });
 
-    if (rows.length === 0) return null;
+    return missionClearLog;
 
-    return rows[0] as MissionClearLogFromDB;
-  } catch (err) {
-    throw new Error(
-      `오류가 발생했어요. 요청 파라미터를 확인해주세요. (${
-        err instanceof Error ? err.message : String(err)
-      })`
-    );
-  } finally {
-    conn.release();
+  } catch (error) {
+    throw(error);
   }
 };
 
