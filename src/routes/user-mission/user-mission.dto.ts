@@ -58,3 +58,18 @@ export const responseFromMyMissionList = (
 };
 
 
+// ====== 6주차 미션 4 ========
+// 진행중인 미션을 성공으로 Patch 하는 API
+
+// 응답용 DTO 변환 => 미션 내용이랑 포인트 나오게 ㄱㄱ  => API마다 DTO를 새로 만드는게 맞는것인가..
+export const responseForClearLog = (log: UserMissionTypes.ClearedLogFromDB): UserMissionTypes.ChallengeMissionResponseDTO => {
+  return {
+    id: log.id,
+    userId: log.userId,
+    pointHistoryId: log.pointHistoryId,
+    dinerMissionId: log.dinerMissionId,
+    status: log.status,
+    startedAt: log.startedAt,
+    completedAt: log.completedAt,
+  };
+};

@@ -3,7 +3,7 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import { bodyToChallengeMission } from "./user-mission.dto.js";
-import { challengeMission, myMissionListService } from "./user-mission.service.js";
+import { challengeMission, myMissionListService, completeMissionService } from "./user-mission.service.js";
 import { ChallengeMissionRequest } from "./user-mission.types.js";
 
 // ===== Request 예시 =====
@@ -65,6 +65,33 @@ export const handleMyMissionList = async (req:Request, res:Response, next: NextF
       }
     )
   } catch (error) {
+    next(error);
+  }
+};
+
+
+
+
+// ======== 6주차 미션 4 ==========
+// // 내가 진행 중인 미션을 진행 완료로 바꾸기 PATCH API => Controller
+
+export const handleCompleteMission = async (req:Request, res:Response, next:NextFunction) => {
+  try {
+    console.log(`${req.params.userId} 유저의 ${req.params.missionLogId} 미션을 완료합니다.`)
+    console.log(req.body); // 체크용 요청 바디
+
+    const userId:number = Number(req.params.userId);
+    const missionLogId:number = Number(req.params.missionLogId);
+
+    const completedMission = await completeMissionService(userId, missionLogId);
+
+    res.status(StatusCodes.OK).json({
+      success: true,
+      message: "미션 완료 처리 완료" ,
+      result: completedMission
+    });
+  } 
+  catch (error) {
     next(error);
   }
 };

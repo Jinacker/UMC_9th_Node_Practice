@@ -137,3 +137,48 @@ try{
   throw(error);
 }
 };
+
+
+//// ===== 6주차 미션 4 ======
+
+// 1. 해당 미션의 유저가 맞는지 체크
+
+export const checkUser = async (userId: number,missionLogId: number): Promise<boolean> => {
+  const checkUsers = await prisma.missionClearLog.findUnique({
+    where: { 
+      userId:userId,
+      id: missionLogId
+    }
+  })
+    return checkUsers !== null;
+  };
+
+
+// 2. 현재 진행중인 미션인지 체크
+export const checkMissionProgress = async (missionLogId: number): Promise<boolean> => {
+  const checkMissionProgress = await prisma.missionClearLog.findUnique({ // Unique와 First 각각 언제 써야할지? => First는 pk 안받을때 쓰는건가..?
+    where: { 
+      id: missionLogId,
+      status: "진행중"
+    }, // 미션 로그인지 
+  });
+  return checkMissionProgress !== null; // 객체가 존재 안하면 false / 있으면 true (null -> falsy / 객체 있음 -> truthy)
+};
+
+// 내가 진행중인 미션 성공으로 바꾸는 PATCH API
+
+export const patchCompleteMission = async (userId:number, missionLogId: number) => {
+  try{
+      const completedMission = await prisma.missionClearLog.update({ 
+        where: {id:missionLogId, userId: userId, status: "진행중"}, // 그냥 이렇게 할거면 앞에 체크하는게 의미 있는건가..? 앞의 로직은 에러 헨들링만을 위한건가
+       data: {
+              status: '성공',
+              completedAt: new Date()
+       }
+      });
+      return completedMission;
+  }
+  catch (error) { // DB단 에러 헨들링
+    throw(error);
+  }
+};
