@@ -1,52 +1,34 @@
 /* eslint-disable prettier/prettier */
-import { pool } from "../../config/db.config.js";
-import { RowDataPacket, ResultSetHeader } from "mysql2/promise";
-import { DinerMissionFromDB } from "./mission.types.js";
+import { prisma } from "../../config/db.config.js";
+import { DinerMissionFromDB, DinerMissionListFromDB } from "./mission.types.js";
 
-// 가게 존재 여부 확인
+// 가게 존재 여부 확인 => 리팩토링
+
 export const checkDinerExists = async (dinerId: number): Promise<boolean> => {
-  const conn = await pool.getConnection();
-  try {
-    const [rows] = await pool.query<RowDataPacket[]>(
-      "SELECT id FROM diner WHERE id = ?",
-      [dinerId]
-    );
-    return rows.length > 0;
-  } catch (err) {
-    throw new Error(
-      "가게 존재 여부 확인 중 오류가 발생했습니다. (" +
-        (err instanceof Error ? err.message : String(err)) +
-        ")"
-    );
-  } finally {
-    conn.release();
-  }
+  const diner = await prisma.diner.findUnique({
+    where: { id: dinerId },
+    select: { id: true }
+  });
+  return !!diner;
 };
 
-// 미션 존재 여부 확인
+
+// 미션 존재 여부 확인 => 리팩토링 
 export const checkMissionExists = async (missionId: number): Promise<boolean> => {
-  const conn = await pool.getConnection();
-  try {
-    const [rows] = await pool.query<RowDataPacket[]>(
-      "SELECT id FROM mission WHERE id = ?",
-      [missionId]
-    );
-    return rows.length > 0;
-  } catch (err) {
-    throw new Error(
-      "미션 존재 여부 확인 중 오류가 발생했습니다. (" +
-        (err instanceof Error ? err.message : String(err)) +
-        ")"
-    );
-  } finally {
-    conn.release();
-  }
+  const mission = await prisma.mission.findUnique({
+    where: { id: missionId },
+    select: { id: true }
+  });
+  return !!mission;
 };
+
 
 // ISO 8601 형식을 MySQL datetime 형식으로 변환
-const convertToMySQLDatetime = (isoString: string): string => {
-  return isoString.replace("T", " ").replace("Z", "");
+// => Prisma는 JS Date 객체 자동 처리하므로 별도 변환 불필요
+const toDate = (iso?: string): Date | null => {
+  return iso ? new Date(iso) : null;
 };
+
 
 // 가게 미션 등록
 export const addDinerMissionToDB = async (
@@ -56,45 +38,67 @@ export const addDinerMissionToDB = async (
     startDate: string;
     endDate?: string;
   }
-): Promise<number> => {
-  const conn = await pool.getConnection();
-  try {
-    const startDate = convertToMySQLDatetime(data.startDate);
-    const endDate = data.endDate ? convertToMySQLDatetime(data.endDate) : null;
+) => {
+  const created = await prisma.dinerMission.create({
+    data: {
+      dinerId,
+      missionId: data.missionId,
+      startDate: new Date(data.startDate),   // Prisma는 Date 객체로 자동 변환
+      endDate: data.endDate ? new Date(data.endDate) : null
+    }
+  });
 
-    const [result] = await pool.query<ResultSetHeader>(
-      "INSERT INTO diner_mission (diner_id, mission_id, start_date, end_date) VALUES (?, ?, ?, ?)",
-      [dinerId, data.missionId, startDate, endDate]
-    );
-    return result.insertId;
-  } catch (err) {
-    throw new Error(
-      "가게 미션 등록 중 오류가 발생했습니다. (" +
-        (err instanceof Error ? err.message : String(err)) +
-        ")"
-    );
-  } finally {
-    conn.release();
-  }
+  return created.id;
 };
 
+
 // 가게 미션 단건 조회
-export const getDinerMissionById = async (dinerMissionId: number): Promise<DinerMissionFromDB | null> => {
-  const conn = await pool.getConnection();
-  try {
-    const [rows] = await pool.query<RowDataPacket[]>(
-      "SELECT * FROM diner_mission WHERE id = ?",
-      [dinerMissionId]
-    );
-    if (rows.length === 0) return null;
-    return rows[0] as DinerMissionFromDB;
-  } catch (err) {
-    throw new Error(
-      "가게 미션 조회 중 오류가 발생했습니다. (" +
-        (err instanceof Error ? err.message : String(err)) +
-        ")"
-    );
-  } finally {
-    conn.release();
+export const getDinerMissionById = async (
+  dinerMissionId: number
+)=> {
+  const dinerMission = await prisma.dinerMission.findUnique({
+    where: { id: dinerMissionId }
+  });
+
+  return dinerMission;
+};
+
+
+
+/////// ======== 6주차 미션 2 ==========
+// // 해당 가게의 미션 목록 조회 API Repository
+
+export const getAllDinerMissions = async (dinerId: number, cursor:number): Promise<DinerMissionListFromDB[]> => {
+  
+  const dinerMissions = await prisma.dinerMission.findMany({ // diner 테이블에서 
+    where: {dinerId: dinerId, id: {gt: cursor}}, // dinerId와 같은 리뷰들 커서보다 큰 값 가져옴
+    orderBy: {id: "asc"},
+    take: 5,
+    
+    select: {
+     diner: {  // 일단 가게 정보도 띄워줬음 
+      select: {
+        region: true,
+        category: true,
+        name: true,
+        rating: true
+      },
+     }, // 이제 다이너 미션 => 유효기간 표시
+      id: true,
+      dinerId: true,
+      missionId: true,
+      startDate: true,
+      endDate: true,
+     mission: { // 그리고 해당 미션의 상세 내용
+      select: {
+        id: true,
+        title: true,
+        description: true,
+        pointReward: true
+      }
+     }
   }
+  });
+
+  return dinerMissions;
 };

@@ -3,8 +3,9 @@
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
 import { bodyToAddDinerMission } from "./mission.dto.js"; // 요청 DTO 변환
-import { addDinerMission } from "./mission.service.js"; // Service 로직
+import { addDinerMission, listDinerMission } from "./mission.service.js"; // Service 로직
 import { AddDinerMissionRequest } from "./mission.types.js";
+import { handleListDinerReviews } from "../review/review.controller.js";
 
 // ===== Request 예시 =====
 // POST /api/v1/missions/diners/1
@@ -45,3 +46,28 @@ export const handleAddDinerMission = async (req: Request, res: Response, next: N
 //     "endDate": "2025-11-30T23:59:59.000Z"
 //   }
 // }
+
+///////////////////////
+
+// ========= 6주차 미션 2==========
+// 특정 가게 미션 목록 조회 API 컨트롤러
+
+export const handleListDinerMission = async (req:Request, res:Response, next: NextFunction ) => {
+  try{
+  console.log(req.params.dinerId, " 가게의 미션을 조회합니다.");
+
+  const dinerId: number = Number(req.params.dinerId); // 식당 id 값
+  const cursor: number = req.query.cursor ? Number(req.query.cursor) : 0; // 커서값이 없으면 0으로 처리 => 커서값 Number로 처리
+
+
+  const DinerMission = await listDinerMission(dinerId,cursor);
+
+  res.status(StatusCodes.OK).json({ // 성공시
+    success: true,
+    message: "해당 가게의 미션 목록을 조회했습니다.",
+    result: DinerMission
+  });
+  } catch(error){
+    next(error);
+  }
+};

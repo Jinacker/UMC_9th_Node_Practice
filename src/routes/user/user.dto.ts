@@ -27,30 +27,16 @@ export const bodyToUser = (body: UserSignUpRequest): UserData => {
 
 ////////////////////////////////////////////////////////////
 
-// 응답 받아온거 검증용 : Response 변환용 DTO
+// 응답 받아온거 검증용 : Response 변환용 DTO => Feat. ORM => DB와 직접 상호작용 하는 부분만 ORM으로 바뀜 
 
-export const responseFromUser = ({
-  user,
-  preferences,
-}: {
-  user: UserFromDB;
-  preferences: PreferenceFromDB[];
-}): UserResponseDTO => {
-  // DB에서 가져온 user 객체 예시:
-  // user = { id: 1, email: "test@example.com", name: "진", gender: "M", birth: "2000-06-04T00:00:00Z", ... }
-  // preferences = [ { category: "운동" }, { category: "음악" } ]
+export const responseFromUser = ({ user, preferences }: { user: any, preferences: any[] }) => {
+  const preferFoods = preferences.map(
+    (preference) => preference.foodCategory.name
+  );
 
-  // 클라가 보기 좋은 형태로 변환
   return {
-    id: user.id,
     email: user.email,
     name: user.name,
-    gender: user.gender,
-    birth: user.birth,
-    address: user.address,
-    detailAddress: user.detailAddress,
-    phoneNumber: user.phoneNumber,
-    preferences: preferences.map((pref) => pref.name), // preference의 이름만 배열로 엮어서 반환해줌
-    createdAt: user.createdAt,
+    preferCategory: preferFoods,
   };
 };

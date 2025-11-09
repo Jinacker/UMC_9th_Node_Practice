@@ -1,12 +1,13 @@
 // service => 실제 비즈니스 로직 실행
-import { responseFromDinerMission } from "./mission.dto.js";
+import { responseFromDinerMission, responseFromDinerMissionList } from "./mission.dto.js";
 import {
   addDinerMissionToDB,
   getDinerMissionById,
   checkDinerExists,
   checkMissionExists,
+  getAllDinerMissions,
 } from "./mission.repository.js";
-import { AddDinerMissionRequest, DinerMissionResponseDTO } from "./mission.types.js";
+import { AddDinerMissionRequest, DinerMissionResponseDTO,DinerMissionListResponseDTO } from "./mission.types.js";
 
 export const addDinerMission = async (
   dinerId: number,
@@ -54,3 +55,24 @@ export const addDinerMission = async (
   // 5. 응답용 DTO 변환 후 반환
   return responseFromDinerMission(dinerMission);
 };
+
+
+////////
+
+// ====== 6주차 미션 2 =======
+// 해당 가게의 미션 목록 조회 API Service
+
+export const listDinerMission = async (dinerId: number, cursor: number): Promise<DinerMissionListResponseDTO[]> => { // Response 배열 반환 타입 설정
+
+  // 1. 가게 존재 여부 검증
+  const dinerExists = await checkDinerExists(dinerId);
+  if (!dinerExists) {
+    throw new Error(`ID가 ${dinerId}인 가게를 찾을 수 없습니다.`);
+  }
+
+  // 2. 해당 가게의 미션 목록 조회
+  const dinerMissionList = await getAllDinerMissions(dinerId, cursor);
+
+  return dinerMissionList.map(responseFromDinerMissionList); // 배열이므로 dto에 매핑 ㄱㄱ 
+};
+

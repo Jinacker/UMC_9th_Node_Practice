@@ -18,11 +18,21 @@ export const responseFromReview = (
 ): ReviewTypes.ReviewResponseDTO => {
   return {
     id: review.id,
-    dinerId: review.diner_id,
-    userId: review.user_id,
+    dinerId: review.dinerId,
+    userId: review.userId,
     rating: review.rating,
     content: review.content,
-    createdAt: review.created_at,
-    updatedAt: review.updated_at,
+    createdAt: review.createdAt,
+    updatedAt: review.updatedAt,
+  };
+};
+
+// 리뷰 목록 반환용 DTO
+export const responseFromReviews = (reviews: ReviewTypes.ReviewFromDB[]) => { // 리뷰의 배열로 타입 선언
+  return {
+    data: reviews,
+    pagination: {
+      cursor: reviews.at(-1)?.id ?? null,
+    },
   };
 };
