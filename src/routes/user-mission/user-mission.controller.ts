@@ -25,9 +25,7 @@ export const handleChallengeMission = async (req: Request, res: Response, next: 
     const missionLog = await challengeMission(dinerMissionId, missionData);
 
     // 성공 응답
-    res.status(StatusCodes.CREATED).json({
-      result: missionLog,
-    });
+    res.status(StatusCodes.CREATED).success(missionLog);
   } catch (error) {
     next(error); // 에러 핸들러로 위임
   }
@@ -57,11 +55,10 @@ export const handleMyMissionList = async (req:Request, res:Response, next: NextF
 
     const MyMissionList = await myMissionListService(userId,cursor);// 질문: 여기선 dto랑 서비스에서 타입을 검증해서 굳이 타입 검증 안해도 될까요..?
 
-    res.status(StatusCodes.OK).json(
+    res.status(StatusCodes.OK).success(
       {
-        sucess: true,
         message: "내가 진행중인 미션 목록을 찾아왔어요!",
-        result: MyMissionList
+        MyMissionList
       }
     )
   } catch (error) {
@@ -85,10 +82,9 @@ export const handleCompleteMission = async (req:Request, res:Response, next:Next
 
     const completedMission = await completeMissionService(userId, missionLogId);
 
-    res.status(StatusCodes.OK).json({
-      success: true,
+    res.status(StatusCodes.OK).success({
       message: "미션 완료 처리 완료" ,
-      result: completedMission
+      completedMission
     });
   } 
   catch (error) {

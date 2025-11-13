@@ -100,6 +100,8 @@ app.get('/set-logout', (req, res) => {
 
 // ===== 실습 ======
 
+// 전역 응답 Wrapper => 이게 맨 위에 있어야되구나! => 라우팅 보다 위에 있어야함
+app.use(responseWrapper);
 
 // 헬스 체크
 app.get("/", (_req: Request, res: Response) => {
@@ -116,6 +118,6 @@ app.use("/api/v1/user-missions", userMissionRouter); // user-mission 도메인 �
 // ===== 에러 핸들링 미들웨어 =====
 // 전역 에러 핸들러
 app.use(errorHandler);
-app.use(responseWrapper);
+
 
 export default app;

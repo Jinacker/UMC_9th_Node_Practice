@@ -29,9 +29,7 @@ export const handleAddDiner = async (req: Request, res: Response, next: NextFunc
     const diner = await addDiner(regionId, dinerData);
 
     // 성공 응답
-    res.status(StatusCodes.CREATED).json({
-      result: diner,
-    });
+    res.status(StatusCodes.CREATED).success(diner);
   } catch (error) {
     next(error); // 에러 핸들러로 위임
   }

@@ -27,9 +27,7 @@ export const handleAddReview = async (req: Request, res: Response, next: NextFun
     const review = await addReview(dinerId, reviewData);
 
     // 성공 응답
-    res.status(StatusCodes.CREATED).json({
-      result: review,
-    });
+    res.status(StatusCodes.CREATED).success(review); // 전역 응답 Wrapper 전달
   } catch (error) {
     next(error); // 에러 핸들러로 위임
   }
@@ -58,7 +56,7 @@ export const handleListDinerReviews = async (req: Request, res: Response, next: 
   const reviews = await listDinerReviews(
         dinerId, cursor
   );
-  res.status(StatusCodes.OK).json(reviews);
+  res.status(StatusCodes.OK).success(reviews);
 } catch(error){
   next(error);
 }
@@ -77,10 +75,9 @@ export const handleListUserReviews = async (req:Request, res: Response, next: Ne
 
   const reviewList = await listUserReviews(userId, cursor);
 
-  res.status(StatusCodes.OK).json({ // 성공시 
+  res.status(StatusCodes.OK).success({ // 성공시 
     message: "내가 작성한 리뷰 목록 조회 성공",
-    reviewList, cursor
-  });
+    reviewList});
 } catch (error) { // 실패시
   next(error);
 }

@@ -28,9 +28,7 @@ export const handleAddDinerMission = async (req: Request, res: Response, next: N
     const dinerMission = await addDinerMission(dinerId, missionData);
 
     // 성공 응답
-    res.status(StatusCodes.CREATED).json({
-      result: dinerMission,
-    });
+    res.status(StatusCodes.CREATED).success(dinerMission);
   } catch (error) {
     next(error); // 에러 핸들러로 위임
   }
@@ -62,10 +60,9 @@ export const handleListDinerMission = async (req:Request, res:Response, next: Ne
 
   const DinerMission = await listDinerMission(dinerId,cursor);
 
-  res.status(StatusCodes.OK).json({ // 성공시
-    success: true,
+  res.status(StatusCodes.OK).success({ // 성공시
     message: "해당 가게의 미션 목록을 조회했습니다.",
-    result: DinerMission
+    DinerMission
   });
   } catch(error){
     next(error);
