@@ -12,5 +12,5 @@ export const handleUserSignUp = async (req: Request, res: Response, _next: NextF
 
   //(여기서 DTO의 bodyToUser를 이용해 요청 데이터 dto로 변환해서 service로 전달)
   const user = await userSignUp(bodyToUser(req.body as UserSignUpRequest)); // service의 userSignUp으로 요청 전달 => await으로 동기처리 => 결과 받아오는거 완료 되어야 다음으로 넘어감.
-  res.status(StatusCodes.OK).json({ result: user }); // userSignUp이 완료되면 => 그때 결과를 res응답을 반환
+  res.status(StatusCodes.OK).success(user); // userSignUp이 완료되면 => 그때 결과를 res응답을 반환 // => 전역 응답 통일 미들웨어로 전달
 };

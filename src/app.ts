@@ -8,7 +8,7 @@ import missionRouter from "./routes/mission/mission.router.js";
 import userMissionRouter from "./routes/user-mission/user-mission.router.js";
 import cookieParser from 'cookie-parser';
 
-
+import { responseWrapper } from './middleware/responseWrapper.js';
 import { errorHandler } from "./middleware/error-handler.js";
 import morgan from "morgan";
 
@@ -97,6 +97,7 @@ app.get('/set-logout', (req, res) => {
     res.send('로그아웃 완료 (쿠키 삭제). <a href="/">메인으로</a>');
 });
 
+
 // ===== 실습 ======
 
 
@@ -115,5 +116,6 @@ app.use("/api/v1/user-missions", userMissionRouter); // user-mission 도메인 �
 // ===== 에러 핸들링 미들웨어 =====
 // 전역 에러 핸들러
 app.use(errorHandler);
+app.use(responseWrapper);
 
 export default app;

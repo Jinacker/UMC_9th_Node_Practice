@@ -29,14 +29,27 @@ export const bodyToUser = (body: UserSignUpRequest): UserData => {
 
 // 응답 받아온거 검증용 : Response 변환용 DTO => Feat. ORM => DB와 직접 상호작용 하는 부분만 ORM으로 바뀜 
 
-export const responseFromUser = ({ user, preferences }: { user: any, preferences: any[] }) => {
+export const responseFromUser = ({
+  user,
+  preferences,
+}: {
+  user: any;
+  preferences: any[];
+}): UserResponseDTO => {
   const preferFoods = preferences.map(
     (preference) => preference.foodCategory.name
   );
 
   return {
+    id: user.id,
     email: user.email,
     name: user.name,
-    preferCategory: preferFoods,
+    gender: user.gender,
+    birth: user.birth,
+    address: user.address,
+    detailAddress: user.detailAddress,
+    phoneNumber: user.phoneNumber,
+    preferences: preferFoods,
+    createdAt: user.createdAt, // DB 구조에 따라 optional
   };
 };

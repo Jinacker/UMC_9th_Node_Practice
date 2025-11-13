@@ -45,11 +45,11 @@ export interface UserResponseDTO {
   id: number;
   email: string;
   name: string;
-  gender: string;
-  birth: Date;
-  address: string;
-  detailAddress: string;
-  phoneNumber: string;
-  preferences: string[];
-  createdAt: Date;
+  gender?: string;
+  birth?: Date;
+  address?: string;
+  detailAddress?: string;
+  phoneNumber?: string;
+  preferences?: string[];
+  createdAt?: Date;
 }

@@ -1,5 +1,6 @@
 // service => 실제 로직 작동
 
+import { DuplicateUserEmailError } from "../../error.js";
 import { responseFromUser } from "./user.dto.js";
 import { addUser, getUser, getUserPreferencesByUserId, setPreference } from "./user.repository.js"; // repository에서 가져오는 함수들
 import { UserData, UserResponseDTO } from "./user.types.js";
@@ -18,7 +19,7 @@ export const userSignUp = async (data: UserData): Promise<UserResponseDTO> => {
   });
 
   if (joinUserId === null) {
-    throw new Error("이미 존재하는 이메일입니다.");
+    throw new DuplicateUserEmailError("이미 존재하는 이메일입니다.",data);
   }
 
   for (const preference of data.preferences) {
