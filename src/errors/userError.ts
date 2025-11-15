@@ -3,8 +3,8 @@ import { AppError } from "./baseError.js";
 
 // U001 - 이메일 중복
 export class DuplicateUserEmailError extends AppError {
-  constructor(reason: string = "이미 존재하는 이메일입니다.", data: any = null) {
-    super(400, reason, "U001", data);
+  constructor(data: any = null) {
+    super(400, "이미 존재하는 이메일입니다.", "U001", data);
   }
 }
 
