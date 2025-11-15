@@ -1,6 +1,6 @@
 // service => 실제 로직 작동
 
-import { DuplicateUserEmailError } from "../../errors/error.js";
+import { DuplicateUserEmailError, UserNotFoundError } from "../../errors/userError.js";
 import { responseFromUser } from "./user.dto.js";
 import { addUser, getUser, getUserPreferencesByUserId, setPreference } from "./user.repository.js"; // repository에서 가져오는 함수들
 import { UserData, UserResponseDTO } from "./user.types.js";
@@ -31,7 +31,7 @@ export const userSignUp = async (data: UserData): Promise<UserResponseDTO> => {
   const user = await getUser(joinUserId); // 데이터 검증용 => 지금 입력한 유저 데이터 확인용으로 받아옴
 
   if (!user) {
-    throw new Error("사용자를 찾을 수 없습니다.");
+    throw new UserNotFoundError("사용자를 찾을 수 없습니다.");
   }
 
   const preferences = await getUserPreferencesByUserId(joinUserId); // 이것도 취향 제대로 들어갔는지 검증용

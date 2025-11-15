@@ -2,7 +2,8 @@
 
 import { Request, Response, NextFunction } from "express";
 import { StatusCodes } from "http-status-codes";
-import {DuplicateUserEmailError} from '../errors/error.js';
+import {DuplicateUserEmailError} from '../errors/userError.js';
+import { AppError } from "../errors/baseError.js";
 
 
 export const errorHandler = (err: Error, req: Request, res: Response, _next: NextFunction) => {
