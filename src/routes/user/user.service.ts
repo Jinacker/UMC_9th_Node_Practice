@@ -1,6 +1,6 @@
 // service => 실제 로직 작동
 
-import { DuplicateUserEmailError } from "../../error.js";
+import { DuplicateUserEmailError } from "../../errors/error.js";
 import { responseFromUser } from "./user.dto.js";
 import { addUser, getUser, getUserPreferencesByUserId, setPreference } from "./user.repository.js"; // repository에서 가져오는 함수들
 import { UserData, UserResponseDTO } from "./user.types.js";
