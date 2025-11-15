@@ -9,5 +9,8 @@ export class AppError extends Error {
     this.status = status;
     this.errorCode = errorCode;
     this.data = data;
+
+    // JS에서 Error 상속할 때 반드시 추가해야 함
+    Object.setPrototypeOf(this, new.target.prototype);
   }
 }
