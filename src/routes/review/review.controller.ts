@@ -49,6 +49,42 @@ export const handleAddReview = async (req: Request, res: Response, next: NextFun
 
 //// 해당 가게의 모든 리뷰를 작성하는 API
 export const handleListDinerReviews = async (req: Request, res: Response, next: NextFunction) => {
+  /*
+    #swagger.summary = '상점 리뷰 목록 조회 API';
+    #swagger.responses[200] = {
+      description: "상점 리뷰 목록 조회 성공 응답",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "SUCCESS" },
+              error: { type: "object", nullable: true, example: null },
+              success: {
+                type: "object",
+                properties: {
+                  data: {
+                    type: "array",
+                    items: {
+                      type: "object",
+                      properties: {
+                        id: { type: "number" },
+                        store: { type: "object", properties: { id: { type: "number" }, name: { type: "string" } } },
+                        user: { type: "object", properties: { id: { type: "number" }, email: { type: "string" }, name: { type: "string" } } },
+                        content: { type: "string" }
+                      }
+                    }
+                  },
+                  pagination: { type: "object", properties: { cursor: { type: "number", nullable: true } }}
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+  */
+  
   try{
   const dinerId = Number(req.params.dinerId);
   const cursor: number = req.query.cursor ? Number(req.query.cursor) : 0; // 커서값 없으면 0

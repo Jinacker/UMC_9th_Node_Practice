@@ -12,7 +12,41 @@ import { responseWrapper } from './middleware/responseWrapper.js';
 import { errorHandler } from "./middleware/error-handler.js";
 import morgan from "morgan";
 
+import swaggerAutogen from "swagger-autogen";
+import swaggerUiExpress from "swagger-ui-express";
+
 const app = express();
+
+// === 스웨거는 최상단에 두는게 표준이다 ===
+app.use(
+    "/docs",
+    swaggerUiExpress.serve,
+    swaggerUiExpress.setup({}, {
+    swaggerOptions: {
+    url: "/openapi.json",
+    },})
+);
+
+app.get("/openapi.json", async (req, res, next) => {
+  // #swagger.ignore = true
+    const options = {
+        openapi: "3.0.0",
+        disableLogs: true,
+        writeOutputFile: false,
+};
+  const outputFile = "/dev/null"; // 파일 출력은 사용하지 않습니다.
+    const routes = ["./src/server.ts", "src/routes/*/*.router.ts"]; // routes에 있는 엔드포인트들도 연결
+    const doc = {
+        info: {
+        title: "UMC 9th",
+        description: "UMC 9th Node.js 테스트 프로젝트입니다.",
+    },
+    host: "localhost:3000",
+};
+
+    const result = await swaggerAutogen(options)(outputFile, routes, doc);
+    res.json(result ? result.data : null);
+});
 
 // ===== 미들웨어 설정 =====
 app.use(cors());
