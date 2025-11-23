@@ -6,8 +6,9 @@
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon -e js,json,prisma --exec \"prisma generate && tsx src/server.ts\"",
-    "build": "npx tsc",
+    "build": "npm run swagger && npx tsc",
     "start": "npm run build && node ./dist/server.js",
+    "swagger": "node ./src/config/swagger-generate.js",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{ts,js,json}\"",
