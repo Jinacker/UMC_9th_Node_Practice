@@ -17,6 +17,83 @@ import { AddDinerRequest } from "./diner.types.js";
 // }
 
 export const handleAddDiner = async (req: Request, res: Response, next: NextFunction) => {
+  /*
+    #swagger.summary = '가게 추가 API';
+    #swagger.description = '특정 지역에 새로운 가게를 추가합니다. 가게명, 음식 카테고리, 주소, 전화번호, 평점 정보를 포함하여 요청합니다.';
+    #swagger.parameters['regionId'] = {
+      in: 'path',
+      description: '지역 ID',
+      required: true,
+      type: 'integer'
+    };
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              name: { type: "string", description: "가게명" },
+              foodCategoryId: { type: "number", description: "음식 카테고리 ID" },
+              address: { type: "string", description: "주소" },
+              phoneNumber: { type: "string", description: "전화번호" },
+              rating: { type: "number", description: "평점", default: 0 }
+            },
+            required: ["name", "foodCategoryId", "address", "phoneNumber"]
+          }
+        }
+      }
+    };
+    #swagger.responses[201] = {
+      description: "가게 추가 성공 응답",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "SUCCESS" },
+              error: { type: "object", nullable: true, example: null },
+              success: {
+                type: "object",
+                properties: {
+                  id: { type: "number", example: 14 },
+                  regionId: { type: "number", example: 3 },
+                  name: { type: "string", example: "홍콩반점" },
+                  foodCategoryId: { type: "number", example: 1 },
+                  address: { type: "string", example: "서울" },
+                  phoneNumber: { type: "string", example: "02-123-4567" },
+                  rating: { type: "number", example: 0 },
+                  createdAt: { type: "string", format: "date-time" }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    #swagger.responses[400] = {
+      description: "가게 추가 실패 응답",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "FAIL" },
+              error: {
+                type: "object",
+                properties: {
+                  errorCode: { type: "string", example: "D001" },
+                  reason: { type: "string", example: "유효하지 않은 지역 ID입니다" },
+                  data: { type: "object" }
+                }
+              },
+              success: { type: "object", nullable: true, example: null }
+            }
+          }
+        }
+      }
+    };
+  */
   try {
     console.log("식당 등록을 요청했습니다!");
     const regionId = Number(req.params.regionId);
