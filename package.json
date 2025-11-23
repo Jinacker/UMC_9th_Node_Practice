@@ -8,7 +8,7 @@
     "dev": "nodemon -e js,json,prisma --exec \"prisma generate && tsx src/server.ts\"",
     "build": "npm run swagger && npx tsc",
     "start": "npm run build && node ./dist/server.js",
-    "swagger": "node ./src/config/swagger-generate.js",
+    "swagger": "tsx ./src/config/swagger-generate.ts",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"src/**/*.{ts,js,json}\"",

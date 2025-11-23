@@ -10,10 +10,10 @@ export interface AddDinerMissionRequest {
 // DB에서 가져온 가게 미션 데이터 (Repository)
 export interface DinerMissionFromDB {
   id: number;
-  diner_id: number;
-  mission_id: number;
-  start_date: Date;
-  end_date: Date | null;
+  dinerId: number;
+  missionId: number;
+  startDate: Date;
+  endDate: Date | null;
 }
 
 // 응답 DTO

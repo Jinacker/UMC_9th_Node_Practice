@@ -24,10 +24,10 @@ export const responseFromDinerMission = (
 ): MissionTypes.DinerMissionResponseDTO => {
   return {
     id: dinerMission.id,
-    dinerId: dinerMission.diner_id,
-    missionId: dinerMission.mission_id,
-    startDate: dinerMission.start_date,
-    endDate: dinerMission.end_date,
+    dinerId: dinerMission.dinerId,
+    missionId: dinerMission.missionId,
+    startDate: dinerMission.startDate,
+    endDate: dinerMission.endDate,
   };
 };
 

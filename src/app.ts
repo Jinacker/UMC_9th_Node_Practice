@@ -1,6 +1,6 @@
 // express 자체 설정
 import cors from "cors";
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import userRouter from "./routes/user/user.router.js";
 import reviewRouter from "./routes/review/review.router.js";
 import dinerRouter from "./routes/diner/diner.router.js";
@@ -50,7 +50,7 @@ app.get('/getcookie', (req, res) => {
     }
 });
 
-const isLogin = (req, res, next) => {
+const isLogin = (req:Request, res:Response, next:NextFunction) => {
     // cookie-parser가 만들어준 req.cookies 객체에서 username을 확인
     const { username } = req.cookies; 
 

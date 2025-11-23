@@ -35,7 +35,7 @@
   "include": [
     "src/**/*.ts",
     "src/config/db.config.ts",
-    "prisma.config.ts",
+    //"prisma.config.ts",
     "@types/*"
   ],
   "exclude": ["node_modules"]
