@@ -15,6 +15,79 @@ import { AddReviewRequest } from "./review.types.js";
 // }
 
 export const handleAddReview = async (req: Request, res: Response, next: NextFunction) => {
+  /*
+    #swagger.summary = '리뷰 작성 API';
+    #swagger.description = '특정 가게에 대한 리뷰를 작성합니다. 사용자 ID, 평점(1-5), 리뷰 내용을 포함하여 요청합니다.';
+    #swagger.parameters['dinerId'] = {
+      in: 'path',
+      description: '가게 ID',
+      required: true,
+      type: 'integer'
+    };
+    #swagger.requestBody = {
+      required: true,
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              userId: { type: "number", description: "사용자 ID" },
+              rating: { type: "number", description: "평점 (1-5)", minimum: 1, maximum: 5 },
+              content: { type: "string", description: "리뷰 내용" }
+            },
+            required: ["userId", "rating", "content"]
+          }
+        }
+      }
+    };
+    #swagger.responses[201] = {
+      description: "리뷰 작성 성공 응답",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "SUCCESS" },
+              error: { type: "object", nullable: true, example: null },
+              success: {
+                type: "object",
+                properties: {
+                  id: { type: "number", example: 1 },
+                  dinerId: { type: "number", example: 3 },
+                  userId: { type: "number", example: 1 },
+                  rating: { type: "number", example: 5 },
+                  content: { type: "string", example: "정말 맛있어요!" },
+                  createdAt: { type: "string", format: "date-time" }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    #swagger.responses[400] = {
+      description: "리뷰 작성 실패 응답 (잘못된 요청)",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "FAIL" },
+              error: {
+                type: "object",
+                properties: {
+                  errorCode: { type: "string", example: "R001" },
+                  reason: { type: "string", example: "유효하지 않은 가게 ID입니다" },
+                  data: { type: "object" }
+                }
+              },
+              success: { type: "object", nullable: true, example: null }
+            }
+          }
+        }
+      }
+    };
+  */
   try {
     console.log("리뷰 작성을 요청했습니다!");
     const dinerId = Number(req.params.dinerId);
@@ -50,7 +123,21 @@ export const handleAddReview = async (req: Request, res: Response, next: NextFun
 //// 해당 가게의 모든 리뷰를 작성하는 API
 export const handleListDinerReviews = async (req: Request, res: Response, next: NextFunction) => {
   /*
-    #swagger.summary = '상점 리뷰 목록 조회 API';
+    #swagger.summary = '가게 리뷰 목록 조회 API';
+    #swagger.description = '특정 가게에 작성된 모든 리뷰를 조회합니다. 커서 기반 페이지네이션을 지원하여 리뷰 목록을 나눠서 가져올 수 있습니다.';
+    #swagger.parameters['dinerId'] = {
+      in: 'path',
+      description: '가게 ID',
+      required: true,
+      type: 'integer'
+    };
+    #swagger.parameters['cursor'] = {
+      in: 'query',
+      description: '페이지네이션 커서 (마지막 리뷰 ID)',
+      required: false,
+      type: 'integer',
+      example: 0
+    };
     #swagger.responses[200] = {
       description: "상점 리뷰 목록 조회 성공 응답",
       content: {
@@ -83,6 +170,28 @@ export const handleListDinerReviews = async (req: Request, res: Response, next: 
         }
       }
     };
+    #swagger.responses[400] = {
+      description: "리뷰 목록 조회 실패 응답",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "FAIL" },
+              error: {
+                type: "object",
+                properties: {
+                  errorCode: { type: "string", example: "R002" },
+                  reason: { type: "string", example: "유효하지 않은 가게 ID입니다" },
+                  data: { type: "object" }
+                }
+              },
+              success: { type: "object", nullable: true, example: null }
+            }
+          }
+        }
+      }
+    };
   */
   
   try{
@@ -102,6 +211,85 @@ export const handleListDinerReviews = async (req: Request, res: Response, next: 
 // 내가 작성한 리뷰 목록 GET
 
 export const handleListUserReviews = async (req:Request, res: Response, next: NextFunction) => {
+  /*
+    #swagger.summary = '내 리뷰 목록 조회 API';
+    #swagger.description = '특정 사용자가 작성한 모든 리뷰를 조회합니다. 커서 기반 페이지네이션을 지원하여 리뷰 목록을 나눠서 가져올 수 있습니다.';
+    #swagger.parameters['userId'] = {
+      in: 'path',
+      description: '사용자 ID',
+      required: true,
+      type: 'integer'
+    };
+    #swagger.parameters['cursor'] = {
+      in: 'query',
+      description: '페이지네이션 커서 (마지막 리뷰 ID)',
+      required: false,
+      type: 'integer',
+      example: 0
+    };
+    #swagger.responses[200] = {
+      description: "사용자 리뷰 목록 조회 성공 응답",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "SUCCESS" },
+              error: { type: "object", nullable: true, example: null },
+              success: {
+                type: "object",
+                properties: {
+                  message: { type: "string", example: "내가 작성한 리뷰 목록 조회 성공" },
+                  reviewList: {
+                    type: "object",
+                    properties: {
+                      data: {
+                        type: "array",
+                        items: {
+                          type: "object",
+                          properties: {
+                            id: { type: "number" },
+                            store: { type: "object", properties: { id: { type: "number" }, name: { type: "string" } } },
+                            user: { type: "object", properties: { id: { type: "number" }, email: { type: "string" }, name: { type: "string" } } },
+                            content: { type: "string" },
+                            rating: { type: "number" },
+                            createdAt: { type: "string", format: "date-time" }
+                          }
+                        }
+                      },
+                      pagination: { type: "object", properties: { cursor: { type: "number", nullable: true } }}
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    };
+    #swagger.responses[400] = {
+      description: "사용자 리뷰 목록 조회 실패 응답",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "FAIL" },
+              error: {
+                type: "object",
+                properties: {
+                  errorCode: { type: "string", example: "R003" },
+                  reason: { type: "string", example: "유효하지 않은 사용자 ID입니다" },
+                  data: { type: "object" }
+                }
+              },
+              success: { type: "object", nullable: true, example: null }
+            }
+          }
+        }
+      }
+    };
+  */
   try{
   console.log("내가 작성한 리뷰 목록을 조회합니다!");
   const userId = Number(req.params.userId);
