@@ -17,8 +17,11 @@ import { handleListDinerReviews } from "../review/review.controller.js";
 
 export const handleAddDinerMission = async (req: Request, res: Response, next: NextFunction) => {
   /*
-    #swagger.summary = '가게 미션 추가 API';
-    #swagger.description = '특정 가게에 새로운 미션을 추가합니다. 미션 ID, 시작일, 종료일 정보를 포함하여 요청합니다.';
+    #swagger.summary = '가게 미션 추가 API (ADMIN 전용)';
+    #swagger.description = '특정 가게에 새로운 미션을 추가합니다. ADMIN 권한이 필요하며, 미션 ID, 시작일, 종료일 정보를 포함하여 요청합니다.';
+    #swagger.security = [{
+      "bearerAuth": []
+    }];
     #swagger.parameters['dinerId'] = {
       in: 'path',
       description: '가게 ID',
@@ -87,9 +90,37 @@ export const handleAddDinerMission = async (req: Request, res: Response, next: N
         }
       }
     };
+    #swagger.responses[401] = {
+      description: "인증 실패 (JWT 토큰 없음 또는 만료)"
+    };
+    #swagger.responses[403] = {
+      description: "권한 없음 (ADMIN 권한 필요)",
+      content: {
+        "application/json": {
+          schema: {
+            type: "object",
+            properties: {
+              resultType: { type: "string", example: "FAIL" },
+              error: {
+                type: "object",
+                properties: {
+                  errorCode: { type: "string", example: "AUTH002" },
+                  reason: { type: "string", example: "관리자 권한이 필요합니다." },
+                  data: { type: "object", properties: {
+                    requiredRole: { type: "string", example: "ADMIN" },
+                    currentRole: { type: "string", example: "USER" }
+                  }}
+                }
+              },
+              success: { type: "object", nullable: true, example: null }
+            }
+          }
+        }
+      }
+    };
   */
   try {
-    console.log("가게 미션 추가를 요청했습니다!");
+    console.log("가게 미션 추가를 요청했습니다! (ADMIN)");
     const dinerId = Number(req.params.dinerId);
     console.log("body:", req.body);
 

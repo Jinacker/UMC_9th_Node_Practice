@@ -1,12 +1,17 @@
 // Mission 도메인 라우터
 
 import { Router } from "express";
+import passport from "passport";
+import { isAdmin } from "../../middleware/auth.middleware.js";
 import { handleAddDinerMission, handleListDinerMission } from "./mission.controller.js";
 
 const missionRouter = Router();
 
-// 가게에 미션 추가 - POST /api/v1/missions/diners/:dinerId
-missionRouter.post("/diners/:dinerId", handleAddDinerMission);
+// JWT 인증 미들웨어
+const isLogin = passport.authenticate('jwt', { session: false });
+
+// 가게에 미션 추가 - POST /api/v1/missions/diners/:dinerId (ADMIN 전용)
+missionRouter.post("/diners/:dinerId", isLogin, isAdmin, handleAddDinerMission);
 
 export default missionRouter;
 
