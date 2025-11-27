@@ -13,6 +13,13 @@ import { errorHandler } from "./middleware/error-handler.js";
 import morgan from "morgan";
 import SwaggerSetup from "./config/swagger.js";
 
+import passport from "passport"; // passport - oauth용
+import { googleStrategy,jwtStrategy } from "./config/auth.config.js";
+
+
+passport.use(googleStrategy);
+passport.use(jwtStrategy); 
+
 const app = express();
 
 // ===== 미들웨어 설정 =====
@@ -22,6 +29,8 @@ app.use(express.json()); // body parser (express 내장)
 app.use(express.urlencoded({ extended: false }));
 app.use(morgan("dev")); // HTTP 요청 로깅용 => 매우매우 유용하네
 app.use(cookieParser()); // 쿠키 parser
+
+app.use(passport.initialize()); // oauth - passport 미들웨어
 
 
 // ===== Swagger =====
@@ -50,19 +59,19 @@ app.get('/getcookie', (req, res) => {
     }
 });
 
-const isLogin = (req:Request, res:Response, next:NextFunction) => {
-    // cookie-parser가 만들어준 req.cookies 객체에서 username을 확인
-    const { username } = req.cookies; 
+const isLogin = passport.authenticate('jwt', { session: false });
 
-    if (username) {
-        console.log(`[인증 성공] ${username}님, 환영합니다.`);
-        next(); 
-    } else {
-    
-        console.log('[인증 실패] 로그인이 필요합니다.');
-        res.status(401).send('<script>alert("로그인이 필요합니다!");location.href="/login";</script>');
-    }
-};
+app.get('/mypage', isLogin, (req:Request, res:Response) => {
+
+  if (!req.user) { // undefined 될수있음 문제 해결
+    return res.status(401).json({ message: "인증 필요" });
+  }
+
+  res.status(200).json({
+    message: `인증 성공! ${req.user}님의 마이페이지입니다.`, // 왜 name이 없다고 뜰까
+    user: req.user,
+  });
+});
 
 
 app.get('/', (req, res) => {
@@ -100,6 +109,33 @@ app.get('/set-logout', (req, res) => {
     res.clearCookie('username');
     res.send('로그아웃 완료 (쿠키 삭제). <a href="/">메인으로</a>');
 });
+
+// ===== 9주차 OAUTH 실습 ======
+
+app.get("/oauth2/login/google", 
+  passport.authenticate("google", { 
+    session: false 
+  })
+);
+app.get(
+  "/oauth2/callback/google",
+  passport.authenticate("google", {
+	  session: false,
+    failureRedirect: "/login-failed",
+  }),
+  (req, res) => {
+    const tokens = req.user; 
+
+    res.status(200).json({
+      resultType: "SUCCESS",
+      error: null,
+      success: {
+          message: "Google 로그인 성공!",
+          tokens: tokens, // { "accessToken": "...", "refreshToken": "..." }
+      }
+    });
+  }
+);
 
 
 // ===== 실습 ======
