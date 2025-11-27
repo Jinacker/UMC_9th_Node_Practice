@@ -1,4 +1,5 @@
 import { prisma } from "../../config/db.config.js";
+import { UpdateUserData } from "./user.types.js";
 
 // User 데이터 삽입
 export const addUser = async (data: any) => {
@@ -44,4 +45,16 @@ export const getUserPreferencesByUserId = async (userId: number) => {
   });
 
   return preferences;
+};
+
+// ===== 유저 수정용 Repository =====
+export const updateUser = async (userId: number, data: UpdateUserData) => { // any로 하면안되는데.... => 그래서 타입 따로 만듦
+  const updated = await prisma.user.update({ // update로 수정
+    where: { id: userId },
+    data: {
+      ...data,
+    },
+  });
+
+  return updated;
 };

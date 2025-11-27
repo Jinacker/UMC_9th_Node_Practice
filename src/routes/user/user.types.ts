@@ -53,3 +53,16 @@ export interface UserResponseDTO {
   preferences?: string[];
   createdAt?: Date;
 }
+
+// === 유저 업데이트용 타입
+export type UpdateUserData = {
+  email?: string;
+  name?: string;
+  gender?: string;
+  birth?: Date;
+  address?: string;
+  detailAddress?: string;
+  phoneNumber?: string;
+};
+
+

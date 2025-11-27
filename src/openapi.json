@@ -134,6 +134,163 @@
         }
       }
     },
+    "/api/v1/users/me": {
+      "patch": {
+        "summary": "회원정보 수정 API",
+        "description": "JWT 토큰으로 인증된 사용자가 자신의 회원정보를 수정합니다.",
+        "responses": {
+          "200": {
+            "description": "회원정보 수정 성공 응답",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "resultType": {
+                      "type": "string",
+                      "example": "SUCCESS"
+                    },
+                    "error": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    },
+                    "success": {
+                      "type": "object",
+                      "properties": {
+                        "userId": {
+                          "type": "number",
+                          "example": 1
+                        },
+                        "name": {
+                          "type": "string",
+                          "example": "김진"
+                        },
+                        "gender": {
+                          "type": "string",
+                          "example": "M"
+                        },
+                        "birth": {
+                          "type": "string",
+                          "example": "2000-01-01"
+                        },
+                        "phoneNumber": {
+                          "type": "string",
+                          "example": "010-1234-5678"
+                        },
+                        "preferCategory": {
+                          "type": "array",
+                          "items": {
+                            "type": "string"
+                          },
+                          "example": [
+                            "양식",
+                            "카페"
+                          ]
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "회원정보 수정 실패 (잘못된 요청)",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "resultType": {
+                      "type": "string",
+                      "example": "FAIL"
+                    },
+                    "error": {
+                      "type": "object",
+                      "properties": {
+                        "errorCode": {
+                          "type": "string",
+                          "example": "U002"
+                        },
+                        "reason": {
+                          "type": "string",
+                          "example": "비밀번호 규칙 위반 또는 잘못된 입력값"
+                        },
+                        "data": {
+                          "type": "object"
+                        }
+                      }
+                    },
+                    "success": {
+                      "type": "object",
+                      "nullable": true,
+                      "example": null
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "인증 실패 (JWT 토큰 없음 또는 만료)"
+          }
+        },
+        "security": [
+          {
+            "bearerAuth": []
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": {
+                    "type": "string",
+                    "example": "김진"
+                  },
+                  "gender": {
+                    "type": "string",
+                    "example": "M"
+                  },
+                  "birth": {
+                    "type": "string",
+                    "format": "date",
+                    "example": "2000-01-01"
+                  },
+                  "address": {
+                    "type": "string",
+                    "example": "서울시 송파구"
+                  },
+                  "detailAddress": {
+                    "type": "string",
+                    "example": "101동 1001호"
+                  },
+                  "phoneNumber": {
+                    "type": "string",
+                    "example": "010-1234-5678"
+                  },
+                  "preferences": {
+                    "type": "array",
+                    "items": {
+                      "type": "number",
+                      "example": 2
+                    },
+                    "example": [
+                      1,
+                      3
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/diners/{dinerId}": {
       "post": {
         "summary": "가게 미션 추가 API",

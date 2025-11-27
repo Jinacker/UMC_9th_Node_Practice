@@ -1,12 +1,20 @@
 // User 도메인 라우터
 
 import { Router } from "express";
-import { handleUserSignUp } from "./user.controller.js";
+import { handleUserSignUp, handleUserPatch } from "./user.controller.js";
+import passport from "passport";
 
 const userRouter = Router();
 
+// JWT 인증 미들웨어
+const isLogin = passport.authenticate('jwt', { session: false });
+
 // 회원가입
 userRouter.post("/signup", handleUserSignUp);
+
+
+// 회원 정보 수정
+userRouter.patch("/me",isLogin, handleUserPatch);
 
 export default userRouter;
 

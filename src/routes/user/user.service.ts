@@ -1,9 +1,9 @@
 // service => 실제 로직 작동
 
 import { DuplicateUserEmailError, UserNotFoundError } from "../../errors/userError.js";
-import { responseFromUser } from "./user.dto.js";
-import { addUser, getUser, getUserPreferencesByUserId, setPreference } from "./user.repository.js"; // repository에서 가져오는 함수들
-import { UserData, UserResponseDTO } from "./user.types.js";
+import { responseFromUpdatedUser, responseFromUser } from "./user.dto.js";
+import { addUser, getUser, getUserPreferencesByUserId, setPreference, updateUser } from "./user.repository.js"; // repository에서 가져오는 함수들
+import { UserData, UserFromDB, UserResponseDTO } from "./user.types.js";
 
 export const userSignUp = async (data: UserData): Promise<UserResponseDTO> => {
   const joinUserId = await addUser({
@@ -38,4 +38,38 @@ export const userSignUp = async (data: UserData): Promise<UserResponseDTO> => {
 
   // 최종 응답 전달  => (service => DTO => controller)
   return responseFromUser({ user, preferences }); // 검증용 응답 => dto로 전달
+};
+
+
+// ====== userPatch =======
+
+export const userPatch = async (userId: number, data: UserFromDB): Promise<UserResponseDTO> => {
+
+  // 1. 기존 사용자 조회 (존재 체크)
+  const existingUser = await getUser(userId);
+  if (!existingUser) {
+    throw new UserNotFoundError("사용자를 찾을 수 없습니다.");
+  }
+
+
+  // 2. 회원정보 수정 (update)
+  await updateUser(userId, {
+    email: data.email,
+    name: data.name,
+    gender: data.gender,
+    birth: data.birth,
+    address: data.address,
+    detailAddress: data.detailAddress,
+    phoneNumber: data.phoneNumber,
+  });
+
+  // 3. 수정된 유저 다시 불러오기 (검증용)
+  const updatedUser = await getUser(userId);
+  if (!updatedUser) {
+    throw new UserNotFoundError("사용자를 찾을 수 없습니다.");
+  }
+  // 4. 최종 응답
+  return responseFromUpdatedUser({
+    user: updatedUser
+  });
 };
