@@ -15,16 +15,17 @@ import { ChallengeMissionRequest, ChallengeMissionResponseDTO } from "./user-mis
 
 export const challengeMission = async (
   dinerMissionId: number,
+  userId: number,
   data: ChallengeMissionRequest ) => {
   // 1. 이미 도전 중인 미션인지 확인
-  const isOngoing = await checkOngoingMission(data.userId, dinerMissionId);
+  const isOngoing = await checkOngoingMission(userId, dinerMissionId);
 
   if (isOngoing) {
     throw new AlreadyChallengeError("이미 도전 중인 미션입니다.");
   }
 
   // 2. Repository에 미션 도전 로그 추가
-  const logId = await addMissionClearLog(data.userId, dinerMissionId);
+  const logId = await addMissionClearLog(userId, dinerMissionId);
 
   if (!logId) {
     throw new FailedChallengeError("미션 도전 등록에 실패했습니다.");

@@ -6,7 +6,6 @@ export const bodyToAddReview = (
   body: ReviewTypes.AddReviewRequest
 ): ReviewTypes.AddReviewRequest => {
   return {
-    userId: Number(body.userId), // 필수
     rating: Number(body.rating), // 필수 (1~5)
     content: body.content?.trim() || "", // 선택 (공백 제거)
   };

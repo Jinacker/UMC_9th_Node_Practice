@@ -2,7 +2,6 @@
 
 // 요청 바디 타입 (Request Body) 겸 요청 DTO
 export interface AddReviewRequest {
-  userId: number; // 리뷰 작성자 ID
   rating: number; // 평점 (1~5)
   content?: string; // 리뷰 내용 (선택)
 }

@@ -2,7 +2,7 @@
 
 // 미션 도전 요청 바디 타입 (Request Body)
 export interface ChallengeMissionRequest {
-  userId: number; // 유저 ID
+  // userId는 JWT 토큰에서 추출하므로 요청 바디에서 제거
 }
 
 // // DB에서 가져온 미션 도전 로그 데이터 (Repository)

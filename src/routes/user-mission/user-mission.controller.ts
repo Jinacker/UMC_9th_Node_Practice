@@ -8,33 +8,20 @@ import { ChallengeMissionRequest } from "./user-mission.types.js";
 
 // ===== Request 예시 =====
 // POST /api/v1/user-missions/1/challenge
-// {
-//   "userId": 1
-// }
+// Authorization: Bearer <JWT_TOKEN>
 
 export const handleChallengeMission = async (req: Request, res: Response, next: NextFunction) => {
   /*
     #swagger.summary = '미션 도전 API';
-    #swagger.description = '가게의 미션에 도전합니다. 사용자 ID를 포함하여 요청하면 해당 미션이 진행 중인 미션으로 추가됩니다.';
+    #swagger.description = '가게의 미션에 도전합니다. JWT 토큰으로 인증된 사용자만 사용할 수 있으며, 해당 미션이 진행 중인 미션으로 추가됩니다.';
+    #swagger.security = [{
+      "bearerAuth": []
+    }];
     #swagger.parameters['dinerMissionId'] = {
       in: 'path',
       description: '가게 미션 ID',
       required: true,
       type: 'integer'
-    };
-    #swagger.requestBody = {
-      required: true,
-      content: {
-        "application/json": {
-          schema: {
-            type: "object",
-            properties: {
-              userId: { type: "number", description: "사용자 ID" }
-            },
-            required: ["userId"]
-          }
-        }
-      }
     };
     #swagger.responses[201] = {
       description: "미션 도전 성공 응답",
@@ -85,6 +72,17 @@ export const handleChallengeMission = async (req: Request, res: Response, next: 
   */
   try {
     console.log("미션 도전을 요청했습니다!");
+
+    // JWT 인증된 사용자 정보에서 userId 추출
+    if (!req.user || !('id' in req.user)) {
+      return res.status(StatusCodes.UNAUTHORIZED).error({
+        errorCode: "AUTH001",
+        reason: "인증이 필요합니다.",
+        data: {}
+      });
+    }
+
+    const userId = (req.user as any).id;
     const dinerMissionId = Number(req.params.dinerMissionId);
     console.log("body:", req.body);
 
@@ -92,7 +90,7 @@ export const handleChallengeMission = async (req: Request, res: Response, next: 
     const missionData = bodyToChallengeMission(req.body as ChallengeMissionRequest);
 
     // 실제 DB 로직 수행 (service)
-    const missionLog = await challengeMission(dinerMissionId, missionData);
+    const missionLog = await challengeMission(dinerMissionId, userId, missionData);
 
     // 성공 응답
     res.status(StatusCodes.CREATED).success(missionLog);
@@ -118,13 +116,10 @@ export const handleChallengeMission = async (req: Request, res: Response, next: 
 export const handleMyMissionList = async (req:Request, res:Response, next: NextFunction) => {
   /*
     #swagger.summary = '내 진행중인 미션 목록 조회 API';
-    #swagger.description = '사용자가 현재 진행 중인 모든 미션을 조회합니다. 커서 기반 페이지네이션을 지원하여 미션 목록을 나눠서 가져올 수 있습니다.';
-    #swagger.parameters['userId'] = {
-      in: 'path',
-      description: '사용자 ID',
-      required: true,
-      type: 'integer'
-    };
+    #swagger.description = 'JWT 토큰으로 인증된 사용자가 현재 진행 중인 모든 미션을 조회합니다. 커서 기반 페이지네이션을 지원하여 미션 목록을 나눠서 가져올 수 있습니다.';
+    #swagger.security = [{
+      "bearerAuth": []
+    }];
     #swagger.parameters['cursor'] = {
       in: 'query',
       description: '페이지네이션 커서 (마지막 미션 로그 ID)',
@@ -195,13 +190,21 @@ export const handleMyMissionList = async (req:Request, res:Response, next: NextF
     };
   */
   try {
+    console.log("내가 진행중인 미션 목록을 조회합니다."); // 요청 체크
 
-    console.log(req.params.userId, "내가 진행중인 미션 목록을 조회합니다."); // 요청 체크
+    // JWT 인증된 사용자 정보에서 userId 추출
+    if (!req.user || !('id' in req.user)) {
+      return res.status(StatusCodes.UNAUTHORIZED).error({
+        errorCode: "AUTH001",
+        reason: "인증이 필요합니다.",
+        data: {}
+      });
+    }
 
-    const userId:number = Number(req.params.userId);
+    const userId:number = (req.user as any).id;
     const cursor: number = req.query.cursor ? Number(req.query.cursor) : 0; // 커서값이 없으면 0으로 처리 => 커서값 Number로 처리
 
-    const MyMissionList = await myMissionListService(userId,cursor);// 질문: 여기선 dto랑 서비스에서 타입을 검증해서 굳이 타입 검증 안해도 될까요..?
+    const MyMissionList = await myMissionListService(userId,cursor);
 
     res.status(StatusCodes.OK).success(
       {
@@ -223,13 +226,10 @@ export const handleMyMissionList = async (req:Request, res:Response, next: NextF
 export const handleCompleteMission = async (req:Request, res:Response, next:NextFunction) => {
   /*
     #swagger.summary = '미션 완료 처리 API';
-    #swagger.description = '진행 중인 미션을 완료 상태로 변경합니다. 사용자 ID와 미션 로그 ID를 통해 특정 미션을 완료 처리합니다.';
-    #swagger.parameters['userId'] = {
-      in: 'path',
-      description: '사용자 ID',
-      required: true,
-      type: 'integer'
-    };
+    #swagger.description = 'JWT 토큰으로 인증된 사용자의 진행 중인 미션을 완료 상태로 변경합니다. 미션 로그 ID를 통해 특정 미션을 완료 처리합니다.';
+    #swagger.security = [{
+      "bearerAuth": []
+    }];
     #swagger.parameters['missionLogId'] = {
       in: 'path',
       description: '미션 로그 ID',
@@ -291,10 +291,18 @@ export const handleCompleteMission = async (req:Request, res:Response, next:Next
     };
   */
   try {
-    console.log(`${req.params.userId} 유저의 ${req.params.missionLogId} 미션을 완료합니다.`)
-    console.log(req.body); // 체크용 요청 바디
+    console.log(`미션 완료 처리를 요청했습니다.`)
 
-    const userId:number = Number(req.params.userId);
+    // JWT 인증된 사용자 정보에서 userId 추출
+    if (!req.user || !('id' in req.user)) {
+      return res.status(StatusCodes.UNAUTHORIZED).error({
+        errorCode: "AUTH001",
+        reason: "인증이 필요합니다.",
+        data: {}
+      });
+    }
+
+    const userId:number = (req.user as any).id;
     const missionLogId:number = Number(req.params.missionLogId);
 
     const completedMission = await completeMissionService(userId, missionLogId);
@@ -303,7 +311,7 @@ export const handleCompleteMission = async (req:Request, res:Response, next:Next
       message: "미션 완료 처리 완료" ,
       completedMission
     });
-  } 
+  }
   catch (error) {
     next(error);
   }

@@ -5,9 +5,8 @@ import * as UserMissionTypes from "./user-mission.types.js";
 export const bodyToChallengeMission = (
   body: UserMissionTypes.ChallengeMissionRequest
 ) => {
-  return {
-    userId: Number(body.userId), // 필수
-  };
+  // userId는 JWT에서 추출하므로 빈 객체 반환
+  return {};
 };
 
 // 응답용 DTO 변환

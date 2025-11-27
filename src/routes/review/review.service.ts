@@ -7,6 +7,7 @@ import { AddReviewRequest, ReviewResponseDTO } from "./review.types.js";
 
 export const addReview = async (
   dinerId: number,
+  userId: number,
   data: AddReviewRequest
 ): Promise<ReviewResponseDTO> => {
   // 1. 가게 존재 여부 검증
@@ -17,7 +18,7 @@ export const addReview = async (
 
   // 2. Repository에 DB 저장 요청
   const addedReview = await addReviewToDB(dinerId, {
-    userId: data.userId,
+    userId: userId,
     rating: data.rating,
     content: data.content ?? "", // default 값 설정
   });
