@@ -69,7 +69,5 @@ export const userPatch = async (userId: number, data: UserFromDB): Promise<UserR
     throw new UserNotFoundError("사용자를 찾을 수 없습니다.");
   }
   // 4. 최종 응답
-  return responseFromUpdatedUser({
-    user: updatedUser
-  });
+  return responseFromUpdatedUser(updatedUser);
 };
