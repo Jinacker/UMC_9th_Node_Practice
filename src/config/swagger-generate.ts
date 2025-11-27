@@ -9,7 +9,7 @@ const doc = {
   },
   servers: [
     {
-      url: "http://localhost:3000/api/v1",
+      url: "http://localhost:3000",
       description: "Local server",
     },
   ],
@@ -29,12 +29,7 @@ const outputFile = "./src/openapi.json";
 
 // glob 패턴은 swagger-autogen이 지원하지 않기 때문에 직접 나열해야 한다고 한다.
 const routes = [
-  "./src/server.ts",
-  "./src/routes/user/user.router.ts",
-  "./src/routes/review/review.router.ts",
-  "./src/routes/diner/diner.router.ts",
-  "./src/routes/mission/mission.router.ts",
-  "./src/routes/user-mission/user-mission.router.ts",
+  "./src/app.ts",
 ];
 
 const options = {
