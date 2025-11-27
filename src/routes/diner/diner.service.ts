@@ -9,20 +9,20 @@ export const addDiner = async (
   data: AddDinerRequest
 )  => {
   // 1. Repository에 DB 저장 요청
-  const dinerId:number = await Number(addDinerToDB(regionId, {
+  const addedDiner = await addDinerToDB(regionId, {
     name: data.name,
     foodCategoryId: data.foodCategoryId,
     address: data.address ?? "", // default 값 설정
     phoneNumber: data.phoneNumber ?? "",
     rating: data.rating ?? 0,
-  }));
+  });
 
-  if (!dinerId) {
+  if (!addedDiner) {
     throw new CantRegisterDinerError("식당 등록에 실패했습니다.");
   };
 
   // 2. 방금 등록한 식당 데이터 조회
-  const diner = await getDinerById(dinerId);
+  const diner = await getDinerById(addedDiner.id);
 
   if (!diner) {
     throw new DinerNotFoundError("등록된 식당 정보를 불러올 수 없습니다.");
