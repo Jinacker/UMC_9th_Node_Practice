@@ -13,6 +13,16 @@ const doc = {
       description: "Local server",
     },
   ],
+  components: {
+    securitySchemes: {
+      bearerAuth: {
+        type: "http",
+        scheme: "bearer",
+        bearerFormat: "JWT",
+        description: "JWT 토큰을 입력하세요. (Bearer 접두사 없이)"
+      }
+    }
+  }
 };
 
 const outputFile = "./src/openapi.json";
