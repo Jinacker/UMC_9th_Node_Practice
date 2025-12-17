@@ -1,0 +1,213 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+//// ============================
+//// USERS
+//// ============================
+
+enum UserRole {
+  USER
+  ADMIN
+}
+
+model User {
+  id            Int      @id @default(autoincrement())
+  email         String   @unique @db.VarChar(255)
+  name          String   @db.VarChar(100)
+  role          UserRole @default(USER) // 유저 역할 컬럼 추가 => (USER / ADMIN)
+  gender        String   @db.VarChar(15)
+  birth         DateTime @db.Date
+  address       String   @db.VarChar(255)
+  detailAddress String?  @map("detail_address") @db.VarChar(255)
+  phoneNumber   String   @map("phone_number") @db.VarChar(20)
+
+  userFavorCategories UserFavorCategory[]
+  reviews             Review[]
+  pointHistories      PointHistory[]
+  missionClearLogs    MissionClearLog[]
+  inquiries           Inquiry[]
+  regionMissionCounts RegionMissionCounter[]
+
+  @@map("users")
+}
+
+//// ============================
+//// FOOD CATEGORY
+//// ============================
+model FoodCategory {
+  id                  Int                 @id @default(autoincrement())
+  name                String              @db.VarChar(50)
+  diners              Diner[]
+  userFavorCategories UserFavorCategory[]
+
+  @@map("food_category")
+}
+
+//// ============================
+//// USER FAVOR CATEGORY
+//// ============================
+model UserFavorCategory {
+  id             Int          @id @default(autoincrement())
+  user           User         @relation(fields: [userId], references: [id])
+  userId         Int          @map("user_id")
+  foodCategory   FoodCategory @relation(fields: [foodCategoryId], references: [id])
+  foodCategoryId Int          @map("food_category_id")
+
+  @@index([foodCategoryId], map: "f_category_id")
+  @@index([userId], map: "user_id")
+  @@map("user_favor_category")
+}
+
+//// ============================
+//// REGION
+//// ============================
+model Region {
+  id                    Int                    @id @default(autoincrement())
+  name                  String                 @db.VarChar(100)
+  diners                Diner[]
+  regionMissionCounters RegionMissionCounter[]
+
+  @@map("region")
+}
+
+//// ============================
+//// DINER
+//// ============================
+model Diner {
+  id          Int          @id @default(autoincrement())
+  region      Region       @relation(fields: [regionId], references: [id])
+  regionId    Int          @map("region_id")
+  category    FoodCategory @relation(fields: [categoryId], references: [id])
+  categoryId  Int          @map("category_id")
+  name        String       @db.VarChar(100)
+  phoneNumber String?      @map("phone_number") @db.VarChar(20)
+  address     String?      @db.VarChar(255)
+  rating      Float?       @default(0.0)
+
+  dinerMissions DinerMission[]
+  reviews       Review[]
+
+  @@map("diner")
+}
+
+//// ============================
+//// MISSION
+//// ============================
+model Mission {
+  id          Int     @id @default(autoincrement())
+  title       String  @db.VarChar(100)
+  description String? @db.Text
+  pointReward Int     @default(0) @map("point_reward")
+
+  dinerMissions DinerMission[]
+
+  @@map("mission")
+}
+
+//// ============================
+//// DINER MISSION
+//// ============================
+model DinerMission {
+  id        Int       @id @default(autoincrement())
+  diner     Diner     @relation(fields: [dinerId], references: [id])
+  dinerId   Int       @map("diner_id")
+  mission   Mission   @relation(fields: [missionId], references: [id])
+  missionId Int       @map("mission_id")
+  startDate DateTime  @map("start_date")
+  endDate   DateTime? @map("end_date")
+
+  missionClearLogs MissionClearLog[]
+
+  @@map("diner_mission")
+}
+
+//// ============================
+//// REVIEW
+//// ============================
+model Review {
+  id        Int      @id @default(autoincrement())
+  diner     Diner    @relation(fields: [dinerId], references: [id])
+  dinerId   Int      @map("diner_id")
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @map("user_id")
+  rating    Int
+  content   String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("review")
+}
+
+//// ============================
+//// POINT HISTORY
+//// ============================
+model PointHistory {
+  id          Int      @id @default(autoincrement())
+  user        User     @relation(fields: [userId], references: [id])
+  userId      Int      @map("user_id")
+  historyDate DateTime @default(now()) @map("history_date")
+  description String?  @db.Text
+  amount      Int
+
+  missionClearLogs MissionClearLog[]
+
+  @@map("point_history")
+}
+
+//// ============================
+//// MISSION CLEAR LOG
+//// ============================
+model MissionClearLog {
+  id             Int           @id @default(autoincrement())
+  user           User          @relation(fields: [userId], references: [id])
+  userId         Int           @map("user_id")
+  dinerMission   DinerMission  @relation(fields: [dinerMissionId], references: [id])
+  dinerMissionId Int           @map("diner_mission_id")
+  pointHistory   PointHistory? @relation(fields: [pointHistoryId], references: [id])
+  pointHistoryId Int?          @map("point_history_id")
+  status         String        @default("진행중")
+  startedAt      DateTime      @default(now()) @map("started_at")
+  completedAt    DateTime?     @map("completed_at")
+
+  @@map("mission_clear_log")
+}
+
+//// ============================
+//// INQUIRY
+//// ============================
+model Inquiry {
+  id        Int      @id @default(autoincrement())
+  user      User     @relation(fields: [userId], references: [id])
+  userId    Int      @map("user_id")
+  title     String   @db.VarChar(100)
+  content   String?  @db.Text
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("inquiry")
+}
+
+//// ============================
+//// REGION MISSION COUNTER
+//// ============================
+model RegionMissionCounter {
+  id           Int    @id @default(autoincrement())
+  region       Region @relation(fields: [regionId], references: [id])
+  regionId     Int    @map("region_id")
+  user         User   @relation(fields: [userId], references: [id])
+  userId       Int    @map("user_id")
+  missionCount Int    @default(0) @map("mission_count")
+
+  @@map("region_mission_counter")
+}
