@@ -9,84 +9,56 @@ on:
 jobs:
   deploy:
     runs-on: ubuntu-latest
-
     steps:
       - name: Checkout
         uses: actions/checkout@v4
 
-      # =========================
-      # SSH 설정
-      # =========================
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
           echo "$EC2_SSH_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
 
-          cat >> ~/.ssh/config <<EOF
+          cat >>~/.ssh/config <<END
           Host umc9thworkbook
             HostName $EC2_HOST
             User ubuntu
             IdentityFile ~/.ssh/id_rsa
             StrictHostKeyChecking no
-          EOF
+          END
         env:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
 
-      # =========================
-      # 전체 묶기 (제외만 지정) ← 핵심 수정
-      # =========================
-      - name: Pack artifact
+      - name: Copy Workspace
         run: |
-          tar -czf ../app.tar.gz \
-            --exclude=node_modules \
-            --exclude=.git \
-            --exclude=.github \
-            .
-          mv ../app.tar.gz .
+          ssh umc9thworkbook 'sudo mkdir -p /opt/app'
+          ssh umc9thworkbook 'sudo chown ubuntu:ubuntu /opt/app'
+          rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.github' ./ umc9thworkbook:/opt/app/
 
-      # =========================
-      # 서버 업로드 + 설치
-      # =========================
-      - name: Upload & Install
+      - name: Install dependencies
         run: |
-          ssh umc9thworkbook 'sudo mkdir -p /opt/app && sudo chown ubuntu:ubuntu /opt/app'
-          scp app.tar.gz umc9thworkbook:/opt/app/app.tar.gz
+          ssh umc9thworkbook 'npm install --prefix /opt/app/'
 
-          ssh umc9thworkbook '
-            set -e
-            cd /opt/app
-
-            tar -xzf app.tar.gz
-            rm -f app.tar.gz
-
-            npm ci --omit=dev
-          '
-
-      # =========================
-      # systemd 서비스
-      # =========================
-      - name: Install systemd service
+      - name: Setup systemd service
         run: |
           ssh umc9thworkbook "sudo tee /etc/systemd/system/app.service > /dev/null <<'EOF'
           [Unit]
-          Description=UMC Express App
+          Description=UMC 9th Project
           After=network.target
 
           [Service]
           User=ubuntu
-          WorkingDirectory=/opt/app
-          Environment=NODE_ENV=production
-          ExecStart=/usr/bin/npm start
+          ExecStart=/usr/bin/npm run dev --prefix /opt/app/
           Restart=always
-          RestartSec=2
 
           [Install]
           WantedBy=multi-user.target
           EOF
-
-          sudo systemctl daemon-reload
-          sudo systemctl enable app
-          sudo systemctl restart app
           "
+
+      - name: Restart service
+        run: |
+          ssh umc9thworkbook 'sudo systemctl daemon-reload'
+          ssh umc9thworkbook 'sudo systemctl enable app'
+          ssh umc9thworkbook 'sudo systemctl restart app'
