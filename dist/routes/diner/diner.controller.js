@@ -1,0 +1,151 @@
+// controller => 요청 출입구
+import { StatusCodes } from "http-status-codes";
+import { bodyToAddDiner } from "./diner.dto.js"; // 요청 DTO 변환
+import { addDiner } from "./diner.service.js"; // Service 로직
+// ===== Request 예시 =====
+// POST /api/v1/diners/regions/3
+// {
+//   "name": "홍콩반점",
+//   "foodCategoryId": 1,
+//   "address": "서울",
+//   "phoneNumber": "02-123-4567",
+//   "rating": 0
+// }
+export const handleAddDiner = async (req, res, next) => {
+    /*
+      #swagger.summary = '가게 추가 API (ADMIN 전용)';
+      #swagger.description = '특정 지역에 새로운 가게를 추가합니다. ADMIN 권한이 필요하며, 가게명, 음식 카테고리, 주소, 전화번호, 평점 정보를 포함하여 요청합니다.';
+      #swagger.security = [{
+        "bearerAuth": []
+      }];
+      #swagger.parameters['regionId'] = {
+        in: 'path',
+        description: '지역 ID',
+        required: true,
+        type: 'integer'
+      };
+      #swagger.requestBody = {
+        required: true,
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                name: { type: "string", description: "가게명" },
+                foodCategoryId: { type: "number", description: "음식 카테고리 ID" },
+                address: { type: "string", description: "주소" },
+                phoneNumber: { type: "string", description: "전화번호" },
+                rating: { type: "number", description: "평점", default: 0 }
+              },
+              required: ["name", "foodCategoryId", "address", "phoneNumber"]
+            }
+          }
+        }
+      };
+      #swagger.responses[201] = {
+        description: "가게 추가 성공 응답",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                resultType: { type: "string", example: "SUCCESS" },
+                error: { type: "object", nullable: true, example: null },
+                success: {
+                  type: "object",
+                  properties: {
+                    id: { type: "number", example: 14 },
+                    regionId: { type: "number", example: 3 },
+                    name: { type: "string", example: "홍콩반점" },
+                    foodCategoryId: { type: "number", example: 1 },
+                    address: { type: "string", example: "서울" },
+                    phoneNumber: { type: "string", example: "02-123-4567" },
+                    rating: { type: "number", example: 0 },
+                    createdAt: { type: "string", format: "date-time" }
+                  }
+                }
+              }
+            }
+          }
+        }
+      };
+      #swagger.responses[400] = {
+        description: "가게 추가 실패 응답",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                resultType: { type: "string", example: "FAIL" },
+                error: {
+                  type: "object",
+                  properties: {
+                    errorCode: { type: "string", example: "D001" },
+                    reason: { type: "string", example: "유효하지 않은 지역 ID입니다" },
+                    data: { type: "object" }
+                  }
+                },
+                success: { type: "object", nullable: true, example: null }
+              }
+            }
+          }
+        }
+      };
+      #swagger.responses[401] = {
+        description: "인증 실패 (JWT 토큰 없음 또는 만료)"
+      };
+      #swagger.responses[403] = {
+        description: "권한 없음 (ADMIN 권한 필요)",
+        content: {
+          "application/json": {
+            schema: {
+              type: "object",
+              properties: {
+                resultType: { type: "string", example: "FAIL" },
+                error: {
+                  type: "object",
+                  properties: {
+                    errorCode: { type: "string", example: "AUTH002" },
+                    reason: { type: "string", example: "관리자 권한이 필요합니다." },
+                    data: { type: "object", properties: {
+                      requiredRole: { type: "string", example: "ADMIN" },
+                      currentRole: { type: "string", example: "USER" }
+                    }}
+                  }
+                },
+                success: { type: "object", nullable: true, example: null }
+              }
+            }
+          }
+        }
+      };
+    */
+    try {
+        console.log("식당 등록을 요청했습니다! (ADMIN)");
+        const regionId = Number(req.params.regionId);
+        console.log("body:", req.body);
+        // 요청 데이터 DTO 변환
+        const dinerData = bodyToAddDiner(req.body);
+        // 실제 DB 로직 수행 (service)
+        const diner = await addDiner(regionId, dinerData);
+        // 성공 응답
+        res.status(StatusCodes.CREATED).success(diner);
+    }
+    catch (error) {
+        next(error); // 에러 핸들러로 위임
+    }
+};
+// ===== Response 예시 =====
+// {
+//   "result": {
+//     "id": 14,
+//     "regionId": 3,
+//     "name": "홍콩반점0410",
+//     "foodCategoryId": 1,
+//     "address": "서울",
+//     "phoneNumber": "02-123-4567",
+//     "rating": 0,
+//     "createdAt": "2025-11-02T11:30:24.000Z"
+//   }
+// }
+//# sourceMappingURL=diner.controller.js.map

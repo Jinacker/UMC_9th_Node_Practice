@@ -1,0 +1,26 @@
+// service => 실제 비즈니스 로직 실행
+import { CantRegisterDinerError, DinerNotFoundError } from "../../errors/dinerError.js";
+import { responseFromDiner } from "./diner.dto.js";
+import { addDinerToDB, getDinerById } from "./diner.repository.js";
+export const addDiner = async (regionId, data) => {
+    // 1. Repository에 DB 저장 요청
+    const addedDiner = await addDinerToDB(regionId, {
+        name: data.name,
+        foodCategoryId: data.foodCategoryId,
+        address: data.address ?? "", // default 값 설정
+        phoneNumber: data.phoneNumber ?? "",
+        rating: data.rating ?? 0,
+    });
+    if (!addedDiner) {
+        throw new CantRegisterDinerError("식당 등록에 실패했습니다.");
+    }
+    ;
+    // 2. 방금 등록한 식당 데이터 조회
+    const diner = await getDinerById(addedDiner.id);
+    if (!diner) {
+        throw new DinerNotFoundError("등록된 식당 정보를 불러올 수 없습니다.");
+    }
+    // 3. 응답용 DTO 변환 후 반환
+    return responseFromDiner(diner);
+};
+//# sourceMappingURL=diner.service.js.map
