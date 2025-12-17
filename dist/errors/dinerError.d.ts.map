@@ -1,0 +1,1 @@
+{"version":3,"file":"dinerError.d.ts","sourceRoot":"","sources":["../../src/errors/dinerError.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,QAAQ,EAAE,MAAM,gBAAgB,CAAC;AAG1C,qBAAa,sBAAuB,SAAQ,QAAQ;gBACtC,IAAI,GAAE,GAAU;CAG7B;AAGD,qBAAa,kBAAmB,SAAQ,QAAQ;gBAClC,IAAI,GAAE,GAAU;CAG7B"}

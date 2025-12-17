@@ -1,0 +1,1 @@
+{"version":3,"file":"reviewError.d.ts","sourceRoot":"","sources":["../../src/errors/reviewError.ts"],"names":[],"mappings":"AACA,OAAO,EAAE,QAAQ,EAAE,MAAM,gBAAgB,CAAC;AAG1C,qBAAa,oBAAqB,SAAQ,QAAQ;gBACpC,IAAI,GAAE,GAAU;CAG7B;AAGD,qBAAa,qBAAsB,SAAQ,QAAQ;gBACrC,IAAI,GAAE,GAAU;CAG7B"}
