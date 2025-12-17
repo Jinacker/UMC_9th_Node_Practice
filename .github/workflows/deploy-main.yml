@@ -35,20 +35,18 @@ jobs:
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
 
       # =========================
-      # 배포 파일 압축 (node_modules 제외)
+      # 전체 묶기 (제외만 지정) ← 핵심 수정
       # =========================
       - name: Pack artifact
         run: |
-          tar -czf app.tar.gz \
-            package.json package-lock.json \
-            src public views \
-            app.js server.js index.js \
+          tar -czf app.tar.gz . \
             --exclude=node_modules \
             --exclude=.git \
+            --exclude=.github \
             --exclude=app.tar.gz
 
       # =========================
-      # 서버로 전송 + 설치
+      # 서버 업로드 + 설치
       # =========================
       - name: Upload & Install
         run: |
@@ -59,18 +57,14 @@ jobs:
             set -e
             cd /opt/app
 
-            # 기존 코드 정리
-            rm -rf src public views app.js server.js index.js package.json package-lock.json
-
-            # 압축 해제
+            rm -rf *
             tar -xzf app.tar.gz
 
-            # 의존성 설치 (프로덕션)
             npm ci --omit=dev
           '
 
       # =========================
-      # systemd 서비스 등록
+      # systemd 서비스
       # =========================
       - name: Install systemd service
         run: |
@@ -83,7 +77,7 @@ jobs:
           User=ubuntu
           WorkingDirectory=/opt/app
           Environment=NODE_ENV=production
-          ExecStart=/usr/bin/node /opt/app/server.js
+          ExecStart=/usr/bin/npm start
           Restart=always
           RestartSec=2
 
