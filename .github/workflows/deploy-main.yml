@@ -58,8 +58,8 @@ jobs:
             set -e
             cd /opt/app
 
-            rm -rf *
             tar -xzf app.tar.gz
+            rm -f app.tar.gz
 
             npm ci --omit=dev
           '
