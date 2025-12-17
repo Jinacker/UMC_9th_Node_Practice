@@ -10,9 +10,27 @@ jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
+      # =========================
+      # 코드 체크아웃
+      # =========================
       - name: Checkout
         uses: actions/checkout@v4
 
+      # =========================
+      # Prisma 폴더 변경 감지
+      # prisma 스키마나 마이그레이션이 변경되었는지 확인
+      # =========================
+      - name: Check prisma has changes
+        uses: dorny/paths-filter@v3
+        id: paths-filter
+        with:
+          filters: |
+            prisma: ["prisma/**"]
+
+      # =========================
+      # SSH 설정
+      # EC2 서버 접속을 위한 SSH 키 및 설정 구성
+      # =========================
       - name: Configure SSH
         run: |
           mkdir -p ~/.ssh
@@ -30,16 +48,38 @@ jobs:
           EC2_HOST: ${{ secrets.EC2_HOST }}
           EC2_SSH_KEY: ${{ secrets.EC2_SSH_KEY }}
 
+      # =========================
+      # 워크스페이스 복사
+      # rsync로 필요한 파일만 서버에 전송 (node_modules, .git 등 제외)
+      # =========================
       - name: Copy Workspace
         run: |
           ssh umc9thworkbook 'sudo mkdir -p /opt/app'
           ssh umc9thworkbook 'sudo chown ubuntu:ubuntu /opt/app'
           rsync -avz --exclude 'node_modules' --exclude '.git' --exclude '.github' ./ umc9thworkbook:/opt/app/
 
+      # =========================
+      # 의존성 설치 및 Prisma Client 생성
+      # npm install로 패키지 설치, Prisma Client는 항상 생성
+      # =========================
       - name: Install dependencies
         run: |
-          ssh umc9thworkbook 'npm install --prefix /opt/app/'
+          ssh umc9thworkbook 'cd /opt/app && npm install'
+          ssh umc9thworkbook 'cd /opt/app && npx prisma generate'
 
+      # =========================
+      # Prisma 마이그레이션 적용
+      # prisma 폴더에 변경사항이 있을 때만 실행
+      # =========================
+      - name: Apply prisma migrations
+        if: steps.paths-filter.outputs.prisma == 'true'
+        run: |
+          ssh umc9thworkbook 'cd /opt/app && npx prisma migrate deploy'
+
+      # =========================
+      # systemd 서비스 설정
+      # 서버 재시작 시 자동으로 애플리케이션 실행
+      # =========================
       - name: Setup systemd service
         run: |
           ssh umc9thworkbook "sudo tee /etc/systemd/system/app.service > /dev/null <<'EOF'
@@ -49,7 +89,8 @@ jobs:
 
           [Service]
           User=ubuntu
-          ExecStart=/usr/bin/npm run dev --prefix /opt/app/
+          WorkingDirectory=/opt/app
+          ExecStart=/usr/bin/npm start --prefix /opt/app/
           Restart=always
 
           [Install]
@@ -57,6 +98,10 @@ jobs:
           EOF
           "
 
+      # =========================
+      # 서비스 재시작
+      # systemd 데몬 리로드 후 서비스 활성화 및 재시작
+      # =========================
       - name: Restart service
         run: |
           ssh umc9thworkbook 'sudo systemctl daemon-reload'
